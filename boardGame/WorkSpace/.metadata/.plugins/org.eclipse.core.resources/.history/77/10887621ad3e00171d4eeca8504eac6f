@@ -1,0 +1,124 @@
+package game.config;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import javax.websocket.Session;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import game.Game;
+import game.SimpleGame;
+import game.board.Board;
+import game.board.SimpleBoard;
+import game.end.WinTest;
+import game.player.Player;
+import game.player.SimplePlayer;
+import game.player.list.PlayerIterator;
+import game.space.SimpleSpace;
+import game.space.Space;
+
+public abstract class GameConfig {
+	
+	public static JSONObject configs = null;
+	
+	static{
+//		not sure if this is the right path
+		try {
+			configs = new JSONObject(new String(Files.readAllBytes(Paths.get("../lib/configs.json")), "UTF-8"));
+		} catch (JSONException | IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public Game makeNewGame() throws Exception{
+		String gameType = null;
+		try {
+			gameType = (String)configs.get("gameType");
+			return (Game)Class.forName(gameType).getConstructor().newInstance();
+		}catch(JSONException e){
+			throw new Exception("JSON configs failed to parse! Game type could not be found!");
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+			e.printStackTrace();
+			throw new Exception("Game type: " + gameType + " could not be used to make a new game");
+		}
+	}
+	
+	public Player makeNewPlayer(Session session){
+		String gameType = null;
+		try {
+			gameType = (String)configs.get("gameType");
+			return (Game)Class.forName(gameType).getConstructor().newInstance();
+		}catch(JSONException e){
+			throw new Exception("JSON configs failed to parse! Game type could not be found!");
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+			e.printStackTrace();
+			throw new Exception("Game type: " + gameType + " could not be used to make a new game");
+		}
+	}
+	
+	public Board makeNewBoard(){
+		String gameType = null;
+		try {
+			gameType = (String)configs.get("gameType");
+			return (Game)Class.forName(gameType).getConstructor().newInstance();
+		}catch(JSONException e){
+			throw new Exception("JSON configs failed to parse! Game type could not be found!");
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+			e.printStackTrace();
+			throw new Exception("Game type: " + gameType + " could not be used to make a new game");
+		}
+	}
+	
+	public static Space makeNewSpace(){
+//		String gameType = null;
+		try {
+			gameType = (String)configs.get("gameType");
+			return (Game)Class.forName(gameType).getConstructor().newInstance();
+		}catch(JSONException e){
+			throw new Exception("JSON configs failed to parse! Game type could not be found!");
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+			e.printStackTrace();
+			throw new Exception("Game type: " + gameType + " could not be used to make a new game");
+		}
+	}
+
+	public PlayerIterator makePlayerIterator(){
+
+		try {
+			return (PlayerIterator)Class.forName((String)configs.get("playerIteratorType")).getConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException | ClassNotFoundException | JSONException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public WinTest makeWinTest(){
+		try {
+			return (PlayerIterator)Class.forName((String)configs.get("playerIteratorType")).getConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException | ClassNotFoundException | JSONException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public Object getConfiguredType(String type){
+		try {
+			return (Game)Class.forName(type).getConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+			e.printStackTrace();
+			throw new Exception("Game type: " + type + " could not be used to make a new game");
+		}
+	}
+}

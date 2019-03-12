@@ -1,0 +1,44 @@
+todo:
+
+	CURRENT GAME TO MAKE:
+		people trying not to land on eachother
+			no rolling, just one move
+				rolling later
+			move event
+			winning condition
+			build on events as you go
+
+	MUST:
+		MOVE TO JAVA BACKEND
+			make the game run in console then start drawing things
+			have it be reactive on the front end: front end sends pings back
+			make it okay to close and get back in, but with new player info
+
+	game logic
+		make most things socially oriented
+		need things to buy
+		more penalty functions - more original ones to fit new gameplay rules
+			un-unleash villian
+		you land on another piece and shit goes down!
+			play a little game and one player moves back if they lose
+			possible nail removal and gifting
+		move to a synched java backend
+		make animation functions fit into code more smoothly
+		have dynamic camera
+		have npcs that you meet on space and they hurt/give you stuff
+		players dynamically find the board as they go along
+
+	structure
+		game start timer
+		chat box
+		color chooser with sign in
+
+
+later things:
+	adding cards - pretty good on that
+	wagering on penalty choices- definitely
+		rather have wagering on green ones
+	fireworks at the end
+	add monopoly elements - buy blue, or white spaces to put rent on
+	if you click on another person you get 5 of their coins
+		pretty shitty

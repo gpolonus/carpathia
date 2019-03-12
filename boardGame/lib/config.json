@@ -1,0 +1,16 @@
+{
+	"spaceType":"malg.space.MalgSpace",
+	"boardType":"malg.board.MalgBoard",
+	"gameType":"malg.game.MalgGame",
+	"playerIteratorType":"malg.player.list.MalgPlayerIterator",
+	"winTestType":"malg.winning.MalgWinTest",
+	"board":,
+	"events":[
+		{
+			"handle":"",
+			"nextEvents":"",
+			"dependencies":[],
+			"inheritances":[],
+		}
+	]
+}

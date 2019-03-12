@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename method &apos;game.socket.GameSocket.start(...)&apos; to &apos;open&apos;&#x0D;&#x0A;- Original project: &apos;BoardGameBackend&apos;&#x0D;&#x0A;- Original element: &apos;game.socket.GameSocket.start(...)&apos;&#x0D;&#x0A;- Renamed element: &apos;game.socket.GameSocket.open(...)&apos;&#x0D;&#x0A;- Update references to refactored element" delegate="false" deprecate="false" description="Rename method &apos;start&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.method" input="/src&lt;game.socket{GameSocket.java[GameSocket~start~QSession;" name="open" references="true" stamp="1493948122060" version="1.0"/>
+</session>

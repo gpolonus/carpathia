@@ -1,0 +1,20 @@
+package game.config;
+
+import game.end.WinTest;
+import game.player.list.PlayerIterator;
+
+public class SimpleGameConfig extends GameConfig {
+
+	@Override
+	public PlayerIterator makePlayerIterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public WinTest makeWinTest() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

@@ -1,0 +1,10 @@
+package game.player.list;
+
+public abstract class PlayerIterator{
+	
+//	sets the new active player on the static game
+	public abstract void setNextPlayer();
+
+	public abstract void setFirstPlayer();
+	
+}

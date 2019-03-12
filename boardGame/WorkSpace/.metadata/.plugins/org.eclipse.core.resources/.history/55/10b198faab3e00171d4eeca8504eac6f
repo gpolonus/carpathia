@@ -1,0 +1,12 @@
+package game.player.list;
+
+import game.player.Player;
+
+public abstract class PlayerIterator{
+	
+//	sets the new active player on the static game
+	public abstract Player getNextPlayer();
+
+	public abstract Player getFirstPlayer();
+	
+}

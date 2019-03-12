@@ -1,0 +1,38 @@
+package game.socket;
+
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.server.ServerEndpoint;
+
+import game.config.SimpleGameConfig;
+
+@ServerEndpoint(value = "/websocket/baseGame")
+public class SimpleGameSocket extends GameSocket{
+	
+	public SimpleGameSocket() {
+		super(new SimpleGameConfig());
+	}
+
+	@OnOpen
+	public void open(Session session) {
+		super.open(session);
+	}
+
+	@OnClose
+	public void end() {
+		super.end();
+	}
+
+	@OnMessage
+	public void incoming(String message) {
+		
+	}
+
+	@OnError
+	public void onError(Throwable t) throws Throwable {
+		super.onError(t);
+	}
+}

@@ -1,0 +1,89 @@
+package game.event;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.json.JSONObject;
+
+import game.Game;
+import game.socket.GameSocket;
+
+public class GameEventList implements Iterable<GameEvent>, Iterator<GameEvent>{
+	
+	public Map<String, GameEvent> eventList = new LinkedHashMap<String, GameEvent>();
+	private Iterator<Map.Entry<String, GameEvent>> iteratorSet;
+	private Iterator<GameEvent> firingIterator;
+	
+	
+	
+	public GameEventList(){
+	}
+	
+	public void add(GameEvent gameEvent){
+		eventList.put(gameEvent.getHandle(), gameEvent);
+		allEvents.put(gameEvent.getHandle(), gameEvent);
+	}
+	
+	public GameEvent get(String handle){
+		return eventList.get(handle);
+	}
+	
+	public static GameEvent getEvent(String handle){
+		return allEvents.get(handle);
+	}
+	
+	public static void addEvent(GameEvent event){
+		allEvents.put(event.getHandle(), event);
+	}
+	
+	
+	public boolean fireEvents(){
+		if(firingIterator == null){
+			firingIterator = this.iterator();
+		}
+		if(firingIterator.hasNext()){
+			firingIterator.next().preExecute();
+			return true;
+		} else {
+			firingIterator = null;
+			return false;
+		}
+	}
+	
+	public boolean finishEvent(String handle, String response) throws Exception{
+		GameEvent endingEvent = get(handle);
+		if(endingEvent == null){
+			throw new Exception("You gave an eventList a handle that does not exist in the map!!! : " + handle);
+		}
+		if(endingEvent.acting()){
+			endingEvent.acting(false);
+			JSONObject jsonResponse = new JSONObject(response);
+			endingEvent.postExecute((JSONObject)jsonResponse.get("data"));
+		}
+		for(GameEvent event : this){
+			if(event.acting()){
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public Iterator<GameEvent> iterator() {
+		iteratorSet = eventList.entrySet().iterator();
+		return this;
+	}
+
+	@Override
+	public boolean hasNext() {
+		return iteratorSet.hasNext();
+	}
+
+	@Override
+	public GameEvent next() {
+		return iteratorSet.next().getValue();
+	}
+}

@@ -1,0 +1,26 @@
+package util;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class JsonObject {
+	private JSONObject json;
+	
+	public JsonObject(String json){
+		try {
+			this.json = new JSONObject(json);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public JsonObject getJSON(String name){
+		try {
+			return new JsonObject(((JSONObject)json.get(name)).toString());
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+}

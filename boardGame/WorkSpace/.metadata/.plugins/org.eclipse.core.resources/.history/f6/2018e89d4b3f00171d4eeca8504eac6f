@@ -1,0 +1,10 @@
+package game;
+
+import game.config.SimpleGameConfig;
+
+public class SimpleGame extends Game {
+
+	public SimpleGame() {
+		super(new SimpleGameConfig());
+	}
+}

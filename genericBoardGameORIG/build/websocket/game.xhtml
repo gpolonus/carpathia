@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+	  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<title>Left Behind: The Movie: The Board Game: The Web Game</title>
+	<script src="utils/jquery.js" />
+	<script src="utils/canvasLibraryObj.js" />
+	<script src="utils/utilityLibrary.js" />
+	<script src="utils/vector.js" />
+	<script src="game.js" />
+	<link rel="stylesheet" type="text/css" href="game.css" />
+</head>
+<body>
+<!-- <div class="noscript"><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websockets rely on Javascript being enabled. Please enable
+	Javascript and reload this page!</h2></div> -->
+<div class="cover"></div>
+<div class="coverContainer" id="alert">
+	<div class="coverContainerContents" id='alertContents'>
+		<ul>
+			<li><h2>SIGN IN TO PLAY</h2></li>
+			<li>Name: <input type="text" id="signInName" maxLength="10"/></li>
+			<li><a href="http://highpie.x10.mx/" target="_blank" style="color:#efe;cursor:default;">Nothing to see here.</a></li>
+			<li><button type="button" id="signInButton" style="cursor:pointer;">Sign In</button></li>
+		</ul>
+	</div>
+</div>
+<div class="container">
+	<div class="column column1">
+		<canvas id="canvas"></canvas>
+	</div>
+	<div class="column column2">
+		<div class="row row1" id="tokenTracker">
+		</div>
+		<div class="row row2" id="logger">
+		</div>
+	</div>
+</div>
+<script type="application/javascript">
+<![CDATA[
+
+	var game = new Game(
+		$("#canvas").get(0).getContext("2d"),
+		$("#logger").get(0),
+		$("#tokenTracker").get(0)
+	);
+	
+]]>
+</script>
+</body>
+</html>
