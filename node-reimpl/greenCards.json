@@ -1,0 +1,402 @@
+[
+  {
+    "options": [
+      "Because he did not want people to look at the code and know the answers.",
+      "Because he did not want to force Java to mess around with MySQL databases.",
+      "Because he knows how to do that.",
+      "A combination of all the other answers."
+    ],
+    "question": "Why did the creator of this store card information by writing to a Java file?",
+    "answer": 4
+  },
+  {
+    "options": [
+      "I grew up.",
+      "I got hit in the head with a bat.",
+      "Times change man.",
+      "Literally anything."
+    ],
+    "question": "What happened?",
+    "answer": 4
+  },
+  {
+    "options": [
+      "Sandy",
+      "Winter",
+      "Sammy",
+      "Summer"
+    ],
+    "question": "What is Morty Smith's sister's name?",
+    "answer": 4
+  },
+  {
+    "options": [
+      "Clorofill",
+      "Chlorofyll",
+      "Choropill",
+      "Chlorophyll"
+    ],
+    "question": "What makes leaves green?",
+    "answer": 4
+  },
+  {
+    "options": [
+      "Yes",
+      "No",
+      "Myabe",
+      "Can't see"
+    ],
+    "question": "Butts?",
+    "answer": 1
+  },
+  {
+    "options": [
+      "Alderaan",
+      "Hoth",
+      "Mars",
+      "Your mom's place"
+    ],
+    "question": "Where is the rebel base?",
+    "answer": 2
+  },
+  {
+    "options": [
+      "69",
+      "42",
+      "53",
+      "Is this a Bob Dylan reference?"
+    ],
+    "question": "How many roads must a man walk down?",
+    "answer": 2
+  },
+  {
+    "options": [
+      "Fuck off.",
+      "3",
+      "4",
+      "32"
+    ],
+    "question": "How many sidewalks must a man walk down?",
+    "answer": 3
+  },
+  {
+    "options": [
+      "Blue",
+      "Green",
+      "Yellow",
+      "Red"
+    ],
+    "question": "What color is absinthe?",
+    "answer": 2
+  },
+  {
+    "options": [
+      "Benjamin Franklin",
+      "Isaac Newton",
+      "Thomas Edison",
+      "John Newton"
+    ],
+    "question": "Who averaged a patent for every three weeks of his life?",
+    "answer": 3
+  },
+  {
+    "options": [
+      "4.5%",
+      "6.3%",
+      "4.2%",
+      "5.6%"
+    ],
+    "question": "What is the alcohol per volume of Sierra Nevada Pale Ale?",
+    "answer": 4
+  },
+  {
+    "options": [
+      "6",
+      "9",
+      "10",
+      "As many beers it takes to get Griffin drunk."
+    ],
+    "question": "How many beers does it take to get Griffin drunk?",
+    "answer": 4
+  },
+  {
+    "options": [
+      "Enough",
+      "Eight menora candles",
+      "Qwelve",
+      "6"
+    ],
+    "question": "How many Christmas?",
+    "answer": 1
+  },
+  {
+    "options": [
+      "How?",
+      "Yes.",
+      "Because.",
+      "It'll be fun!"
+    ],
+    "question": "Why?",
+    "answer": 3
+  },
+  {
+    "options": [
+      "Protein",
+      "Protein",
+      "Protein",
+      "Protein"
+    ],
+    "question": "How do you spell protein?",
+    "answer": 1
+  },
+  {
+    "options": [
+      "White",
+      "Indeterminate",
+      "Green",
+      "Fart"
+    ],
+    "question": "What color is my shirt?",
+    "answer": 2
+  },
+  {
+    "options": [
+      "Andrew Johnson",
+      "Andrew Jackson",
+      "Franklin Pierce",
+      "Benjamin Harrison"
+    ],
+    "question": "Who was the 17th president?",
+    "answer": 1
+  },
+  {
+    "options": [
+      "That's not what your mom said...",
+      "Oh! The uniform!",
+      "She's rich! Rich, powerful...",
+      "Bitch please I'm the second black character in the star wars universe"
+    ],
+    "question": "Aren't you a little short for a storm trooper?",
+    "answer": 4
+  },
+  {
+    "options": [
+      "If you cut it down, then  youll surely know.",
+      "If you cut it down, then they will come.",
+      "If you cut it down, you better starting runnin boy!",
+      "If you cut it down, then youll never know."
+    ],
+    "question": "How high does a Sycamore grow?",
+    "answer": 4
+  },
+  {
+    "options": [
+      "Gerald Ford",
+      "Spencer Silver",
+      "Paul Krugman",
+      "Arthur Fry"
+    ],
+    "question": "Who invented sticky notes?",
+    "answer": 4
+  },
+  {
+    "options": [
+      "December",
+      "March",
+      "September",
+      "June"
+    ],
+    "question": "In what month did ancient Romans celebrate Saturnalia?",
+    "answer": 1
+  },
+  {
+    "options": [
+      "Carbon dioxide",
+      "Water vapor",
+      "Nitrogen",
+      "Methane"
+    ],
+    "question": "On average, what is the most abundant gas released into the atmospher by volcanoes?",
+    "answer": 2
+  },
+  {
+    "options": [
+      "Frank Oz",
+      "Tom Kane",
+      "Gilbert Gottfried",
+      "Nancy Cartwright"
+    ],
+    "question": "Who voiced Miss Piggy?",
+    "answer": 1
+  },
+  {
+    "options": [
+      "He",
+      "She",
+      "It",
+      "They"
+    ],
+    "question": "Who got so much things to say right now?",
+    "answer": 4
+  },
+  {
+    "options": [
+      "Zhang Qun",
+      "Ma Ying-jeou ",
+      "Xi Jinping",
+      "Lin Bih-jaw"
+    ],
+    "question": "As of October 2016, who is the president of China? ",
+    "answer": 3
+  },
+  {
+    "options": [
+      "4.3%",
+      "6.2%",
+      "5.7%",
+      "5.1%"
+    ],
+    "question": "What is the alcohol content by volume of Lagunitas IPA?",
+    "answer": 2
+  },
+  {
+    "options": [
+      "Simon Street",
+      "Hymen Street",
+      "Bison Street",
+      "Zion Street"
+    ],
+    "question": "Where is the house of the parents of Andrew Kroenke?",
+    "answer": 1
+  },
+  {
+    "options": [
+      "Paul Bunyan",
+      "Pecos Bill",
+      "John Henry",
+      "Brer Rabbit"
+    ],
+    "question": "Who said to his captain, [A man is nohing but a man, But before I let your steam drill beat me down, Id die with a hammer in my hand, Lord, Lord, Id die with a hammer in my hand.]",
+    "answer": 3
+  },
+  {
+    "options": [
+      "Ireland",
+      "Saudi Arabia",
+      "South Korea",
+      "United States"
+    ],
+    "question": "Which country uses plug type C following the International Electrotechnical Commission standards?",
+    "answer": 3
+  },
+  {
+    "options": [
+      "Silver",
+      "Black",
+      "Pink",
+      "White"
+    ],
+    "question": "Which of these is not an available color of iPhone?",
+    "answer": 1
+  },
+  {
+    "options": [
+      "Divine Right of Kings",
+      "Popular Vote",
+      "Because Dana said so",
+      "The 10th Ammendment"
+    ],
+    "question": "What gives you the right?",
+    "answer": 1
+  },
+  {
+    "options": [
+      "Yes",
+      "No",
+      "Maybe",
+      "Try again later"
+    ],
+    "question": "Do you like me?",
+    "answer": 4
+  },
+  {
+    "options": [
+      "A dragon",
+      "Howard Stern",
+      "Griffin",
+      "Happy Rotter"
+    ],
+    "question": "Who do you think you are?",
+    "answer": 1
+  },
+  {
+    "options": [
+      "Yes",
+      "No",
+      "That doesn't make sense",
+      "Dana, will you clean my glasses?"
+    ],
+    "question": "Do you want a house with more bathrooms than bedrooms?",
+    "answer": 1
+  },
+  {
+    "options": [
+      "Because Dennis is a man bastard",
+      "Because Dennis is a bastard man",
+      "Pass",
+      "This is a bad question"
+    ],
+    "question": "Dennis is idiot. Why Charlie hate?",
+    "answer": 2
+  },
+  {
+    "options": [
+      "Legend",
+      "MJ",
+      "The King",
+      "Just give me The Answer"
+    ],
+    "question": "MJ or LBJ?",
+    "answer": 2
+  },
+  {
+    "options": [
+      "Puerto Rico hoe",
+      "What about Queens?",
+      "Lonely Island",
+      "Biggie"
+    ],
+    "question": "Where Brooklyn at?",
+    "answer": 3
+  },
+  {
+    "options": [
+      "Doggo",
+      "Moose",
+      "Third Eye Blind",
+      "Your Mom"
+    ],
+    "question": "Who couldn't resist the temptation to get up and sniff at sour patch kids?",
+    "answer": 2
+  },
+  {
+    "options": [
+      "Wilt Chamberlain, 100",
+      "Michael Jordan, 91",
+      "Kobe Bryant, 81",
+      "Michael Jordan, 100000000"
+    ],
+    "question": "Most points scored in one NBA game?",
+    "answer": 1
+  },
+  {
+    "options": [
+      "7",
+      "6",
+      "10",
+      "3"
+    ],
+    "question": "Most passing touchdowns in one NFL game?",
+    "answer": 1
+  }
+]
