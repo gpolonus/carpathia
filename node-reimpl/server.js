@@ -53,9 +53,9 @@ const incoming = client => {
           playerNum,
           playerName
         });
-        if(connections.length === 1) {
-          return;
-        }
+        // if(connections.length === 1) {
+        //   return;
+        // }
 
         tellEveryoneElse(playerNum, `otherNewPlayers~${playerName}|${playerNum}~`);
         const message = connections.filter(c => c.id !== playerNum).reduce((ac, session) => `${ac}${session.playerName}|${session.playerNum}~`, 'otherNewPlayers~');
@@ -73,24 +73,24 @@ const incoming = client => {
       case "greenCard":
         greenCard = greenCards.getCard();
         const options = greenCard.options;
-        const answersMessage = args[1] + "~" + greenCard.question + "~" + options[0] + "~" + options[1] + "~" + options[2] + "~" + options[3] + "~";
+        const answersMessage = playerNum + "~" + greenCard.question + "~" + options[0] + "~" + options[1] + "~" + options[2] + "~" + options[3] + "~";
         tellMe(playerNum, "greenCard~" + answersMessage);
         broadcast("greenCardShow~" + answersMessage);
         break;
 
       case "redCard":
         redCard = redCards.getCard();
-        broadcast("redCard~" + args[1] + "~" + redCard + "~");
+        broadcast("redCard~" + playerNum + "~" + redCard + "~");
         break;
 
       case "greenCardAnswer":
         const [ selectedOption ] = args;
-        if(selectedOption === greenCard.answerValue) {
-          broadcast("greenCardAnswer~" + playerName + " selected \"" + selectedOption + "\" and got the question right!");
+        if(selectedOption === greenCard.answer) {
+          broadcast("greenCardAnswer~" + playerName + " selected \"" + greenCard.answerValue + "\" and got the question right!");
           broadcast("getTokens~" + playerNum + "~" + 2 + "~");
           broadcast("rollAgain~" + playerNum + "~");
         } else {
-          broadcast("greenCardAnswer~" + playerName + " selected \"" + selectedOption + "\" and got the question wrong!");
+          broadcast("greenCardAnswer~" + playerName + " selected \"" + greenCard.answerValue + "\" and got the question wrong!");
           broadcast("loseTokens~" + playerNum + "~" + 1 + "~");
           tellMe(playerNum, "turnEnd~" + playerNum + "~");
         }

@@ -20,6 +20,7 @@ module.exports = {
 const randomizeNumbers = num => {
   const array = Array(num).fill().map((_, i) => i);
   const randomizeArray = (values, ac = []) => {
+    if(values.length === 0) return ac;
     const randIndex = Math.round(Math.random() * (values.length - 1));
     const [value] = values.splice(randIndex, 1);
     return randomizeArray(values, [...ac, value]);

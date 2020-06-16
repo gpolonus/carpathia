@@ -18,7 +18,7 @@ function Game(context, logHolder, tokenTracker) {
 	var board = new Board();
 	var carpathia = new Carpathia();
 	var activePlayer;
-	var roll;
+	var carpathiaChance = 2;
 	var spaceWidth;
 	var startSpot;
 	var clientName;
@@ -480,7 +480,7 @@ function Game(context, logHolder, tokenTracker) {
 					var possibilities = [{
 							text: "You got Griffin's website! Good job!",
 							func: function () {
-								window.open("http://highpie.x10.mx");
+								window.open("https://grifstuf.com");
 								Chat.socket.send("broadcast~" + clientName + " got to go to Griffin's website!");
 								prepTurnEnd();
 							}
@@ -609,7 +609,7 @@ function Game(context, logHolder, tokenTracker) {
 								notRolling++;
 								if (rollingSuccess[i] == undefined) {
 									// carpathia Percentage
-									if (Math.round(Math.random() * 2) == 0)
+									if (Math.round(Math.random() * carpathiaChance) == 0)
 									// if(Math.round(Math.random()*0) == 0)
 									{
 										rollingSuccess[i] = true;
@@ -644,6 +644,7 @@ function Game(context, logHolder, tokenTracker) {
 								setTimeout(showCarpathiaDice, 1);
 						} else {
 							Chat.socket.send("broadcast~" + clientName + " failed to summon the antiChrist. Dammit!");
+							carpathiaChance -= 0.2;
 							$(ctx.canvas).off("click");
 							$(ctx.canvas).off("mousemove");
 							prepTurnEnd();
