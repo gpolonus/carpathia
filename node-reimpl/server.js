@@ -1,11 +1,11 @@
 
-const greenCards = requrie('./greenCard')
-const redCards = requrie('./redCard')
+const greenCards = require('./greenCard')
+const redCards = require('./redCard')
 
 const wss = require('ws').Server;
 const s = new wss({
   port: 5001,
-  path: '/websocket/game'
+  path: '/genericBoardGame/websocket/game'
 });
 
 const getIdMaker = () => {
@@ -17,9 +17,8 @@ const connectionId = getIdMaker();
 
 const connections = [];
 
-s.on('connection', onStart);
-
 const onStart = (client) => {
+  console.log('start');
   client.on('message', incoming(client));
   client.on('error', onError);
 };
@@ -47,6 +46,7 @@ const incoming = client => {
       case 'newPlayer':
         playerName = args[0];
         playerNum = connectionId();
+        console.log({ playerName, playerNum });
         connections.push({
           client,
           id: playerNum,
@@ -104,8 +104,8 @@ const incoming = client => {
 
 const onError = (...args) => console.log('error:', JSON.stringify(args));
 
-const broadcast = (msg, connections = connections) => {
-  connections.forEach(session => {
+const broadcast = (msg, conns = connections) => {
+  conns.forEach(session => {
     try {
       session.client.send(msg);
     } catch (error) {
@@ -163,3 +163,5 @@ const tellEveryoneElse = (playerNum, msg) => {
 //   }
 
 const tellMe = (playerNum, msg) => connections.find(c => c.id === playerNum).client.send(msg)
+
+s.on('connection', onStart);
