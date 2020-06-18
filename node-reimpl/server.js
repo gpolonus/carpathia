@@ -2,12 +2,6 @@
 const greenCards = require('./greenCard')
 const redCards = require('./redCard')
 
-const wss = require('ws').Server;
-const s = new wss({
-  port: 5001,
-  path: '/genericBoardGame/websocket/game'
-});
-
 const getIdMaker = () => {
   let i = 0;
   return () => i++;
@@ -164,4 +158,21 @@ const tellEveryoneElse = (playerNum, msg) => {
 
 const tellMe = (playerNum, msg) => connections.find(c => c.id === playerNum).client.send(msg)
 
-s.on('connection', onStart);
+
+const wss = require('ws').Server;
+
+const startServer = () => {
+  const s = new wss({
+    port: 5001,
+    path: '/genericBoardGame/websocket/game'
+  });
+
+  s.on('connection', onStart);
+}
+
+// startServer();
+
+module.exports = {
+  startServer,
+  onStart
+}

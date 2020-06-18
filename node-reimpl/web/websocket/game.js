@@ -19,6 +19,9 @@ function Game(context, logHolder, tokenTracker) {
 	var carpathia = new Carpathia();
 	var activePlayer;
 	var carpathiaChance = 2;
+	var carpathiaDecreaseAmount = 0.25;
+	var nextRollValue = -1;
+	window.setNextRollValue = num => nextRollValue = num;
 	var spaceWidth;
 	var startSpot;
 	var clientName;
@@ -644,7 +647,7 @@ function Game(context, logHolder, tokenTracker) {
 								setTimeout(showCarpathiaDice, 1);
 						} else {
 							Chat.socket.send("broadcast~" + clientName + " failed to summon the antiChrist. Dammit!");
-							carpathiaChance -= 0.2;
+							carpathiaChance -= carpathiaDecreaseAmount;
 							$(ctx.canvas).off("click");
 							$(ctx.canvas).off("mousemove");
 							prepTurnEnd();
@@ -774,7 +777,9 @@ function Game(context, logHolder, tokenTracker) {
 					ctx.globalAlpha = ga;
 					setTimeout(showDiceNumber, 50, (num + 1) % 6);
 				} else {
-					Chat.socket.send("rolled~" + (num + 1) + "~" + clientNum + "~");
+					const realRollNum = nextRollValue === -1 ? num : nextRollValue;
+					Chat.socket.send("rolled~" + (realRollNum + 1) + "~" + clientNum + "~");
+					nextRollValue = -1;
 				}
 			}
 
@@ -1849,9 +1854,11 @@ function Game(context, logHolder, tokenTracker) {
 		$(".cover, .coverContainer").css("display", "none");
 		clientName = $("#signInName").val().replace(/[^a-zA-Z ]/g, "");
 		if (window.location.protocol == 'http:') {
-			Chat.connect('ws://' + window.location.host + '/genericBoardGame/websocket/game');
+			// Chat.connect('ws://' + window.location.host + '/genericBoardGame/websocket/game');
+			Chat.connect('ws://' + window.location.host);
 		} else {
-			Chat.connect('wss://' + window.location.host + '/genericBoardGame/websocket/game');
+			// Chat.connect('wss://' + window.location.host + '/genericBoardGame/websocket/game');
+			Chat.connect('wss://' + window.location.host);
 		}
 	};
 
