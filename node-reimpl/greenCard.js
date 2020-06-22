@@ -6,9 +6,15 @@
 
 const greenCards = require('./greenCards.json');
 
+let greenCardHolder = greenCards
+
 module.exports = {
   getCard: () => {
-    const card = { ...greenCards[Math.round(Math.random() * (greenCards.length - 1))] };
+    const cardIndex = Math.round(Math.random() * (greenCards.length - 1))
+    const card = { ...greenCardHolder.splice(cardIndex, 1)[0] };
+    if (greenCardHolder.length === 0) {
+      greenCardHolder = greenCards
+    }
     const randomMapping = randomizeNumbers(card.options.length);
     card.options = card.options.map((_, i) => card.options[randomMapping[i]]);
     card.answer = randomMapping[card.answer];
