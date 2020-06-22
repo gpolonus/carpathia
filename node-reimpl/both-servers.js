@@ -27,5 +27,7 @@ const server = http.createServer((req, res) => {
 const ws = new wss({ server });
 ws.on('connection', onStart);
 
-server.listen(8080);
-console.log('Listening on 8080!');
+console.log(process.env.NODE_ENV);
+const port = process.env.NODE_ENV === 'PROD' ? 80 : 8080
+server.listen(port);
+console.log(`Listening on ${port}!`);
