@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "NODE_ENV=PROD node both-servers.js",
-    "start:dev": "nodemon ./both-servers.js"
+    "start:dev": "nodemon ./both-servers.js 8080"
   },
   "author": "",
   "license": "ISC",
