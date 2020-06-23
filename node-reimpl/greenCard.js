@@ -15,10 +15,10 @@ module.exports = {
     if (greenCardHolder.length === 0) {
       greenCardHolder = greenCards
     }
-    const randomMapping = randomizeNumbers(card.options.length);
-    card.options = card.options.map((_, i) => card.options[randomMapping[i]]);
-    card.answer = randomMapping[card.answer];
-    card.answerValue = card.options[card.answer];
+    // const randomMapping = randomizeNumbers(card.options.length);
+    // card.options = card.options.map((_, i) => card.options[randomMapping[i]]);
+    // card.answer = randomMapping[card.answer];
+    card.answerValue = card.options[card.answer - 1];
     return card;
   }
 }
