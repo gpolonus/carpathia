@@ -1,9 +1,0 @@
-package game.player.list;
-
-public abstract class PlayerIterator{
-	
-	public abstract void setNextPlayer();
-
-	public abstract void setFirstPlayer();
-	
-}

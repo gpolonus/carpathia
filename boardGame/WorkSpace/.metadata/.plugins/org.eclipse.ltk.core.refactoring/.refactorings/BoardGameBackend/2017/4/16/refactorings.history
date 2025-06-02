@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Copy element &apos;JSONIterableArray.java&apos; to &apos;TestyTest/src/builder&apos;&#x0D;&#x0A;- Original project: &apos;BoardGameBackend&apos;&#x0D;&#x0A;- Destination element: &apos;TestyTest/src/builder&apos;&#x0D;&#x0A;- Original element: &apos;util.JSONIterableArray.java&apos;" description="Copy compilation unit" destination="=TestyTest/src&lt;builder" element1="/src&lt;util{JSONIterableArray.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1492660212109" units="1" version="1.0"/>
-</session>

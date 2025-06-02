@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring accessors="true" comment="Delete 5 elements from project &apos;SimpleBoardGame&apos;&#x0D;&#x0A;- Original project: &apos;SimpleBoardGame&apos;&#x0D;&#x0A;- Original elements:&#x0D;&#x0A;     SimpleBoardGame/src/simpleGame.config&#x0D;&#x0A;     SimpleBoardGame/src/simpleGame.event.move&#x0D;&#x0A;     SimpleBoardGame/src/simpleGame.game&#x0D;&#x0A;     SimpleBoardGame/src/simpleGame.player&#x0D;&#x0A;     SimpleBoardGame/src/simpleGame.socket" description="Delete elements" element1="/src&lt;simpleGame.socket" element2="/src&lt;simpleGame.player" element3="/src&lt;simpleGame.game" element4="/src&lt;simpleGame.event.move" element5="/src&lt;simpleGame.event" element6="/src&lt;simpleGame" element7="/src&lt;simpleGame.config" element8="/src&lt;simpleGame" elements="8" flags="589830" id="org.eclipse.jdt.ui.delete" resources="0" stamp="1491679166614" subPackages="false" version="1.0"/>
-</session>
