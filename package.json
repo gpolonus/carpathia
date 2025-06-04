@@ -1,18 +1,34 @@
 {
-  "name": "carpathia-node",
-  "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
-  "scripts": {
-    "start": "NODE_ENV=PROD node both-servers.js",
-    "start:dev": "nodemon ./both-servers.js 8080"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "http": "0.0.1-security",
-    "http-proxy": "^1.18.1",
-    "nodemon": "^2.0.4",
-    "ws": "^7.3.0"
-  }
+	"name": "carpathia-node",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+		"frontend:build": "cd clientapp && vite build && cd ../boardview && vite build",
+		"backend:dev": "cd backend && nodemon ./sse.js",
+		"clientapp:dev": "cd clientapp && vite dev --port 3001",
+		"boardview:dev": "cd boardview && vite dev --port 3002",
+		"dev": "concurrently 'npm run clientapp:dev' 'npm run boardview:dev' 'npm run backend:dev'"
+	},
+	"dependencies": {
+		"body-parser": "^2.2.0",
+		"cors": "^2.8.5",
+		"dotenv": "^16.5.0",
+		"express": "^5.1.0",
+		"lit": "^3.3.0",
+		"multer": "^2.0.0",
+		"random-words": "^2.0.1",
+		"ws": "^7.3.0"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "^6.0.0",
+		"@sveltejs/adapter-node": "^5.2.12",
+		"@sveltejs/kit": "^2.16.0",
+		"@sveltejs/vite-plugin-svelte": "^5.0.0",
+		"concurrently": "^9.1.2",
+		"http-server": "^14.1.1",
+		"nodemon": "^2.0.4",
+		"svelte": "^5.0.0",
+		"vite": "^6.2.6"
+	}
 }
