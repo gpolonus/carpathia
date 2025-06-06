@@ -394,7 +394,7 @@ function Game(context, logHolder, tokenTracker) {
           board.players[clientNum].roll();
           // prepTurnEnd();
         },
-        "penalty": function () {
+        "penalty": async function () {
           var startLocation = {
             x: ctx.canvas.width / 2 - 4 * spaceWidth,
             y: ctx.canvas.height / 2 - spaceWidth
@@ -546,35 +546,39 @@ function Game(context, logHolder, tokenTracker) {
           ];
           var scaler = getScaler();
 
-          $(ctx.canvas).on("click", function () {
-            if (event.x * scaler.x < startLocation.x + spaceWidth * 2 && event.x * scaler.x > startLocation.x && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
-              drawChosen(actualities[0].text, 0);
-              drawOption(actualities[1].text, 1);
-              drawOption(actualities[2].text, 2);
-              $(ctx.canvas).off("click");
-              $(ctx.canvas).off("mousemove");
-              actualities[0].func();
-            } else if (event.x * scaler.x < startLocation.x + spaceWidth * 5 && event.x * scaler.x > startLocation.x + spaceWidth * 3 && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
-              drawOption(actualities[0].text, 0);
-              drawChosen(actualities[1].text, 1);
-              drawOption(actualities[2].text, 2);
-              $(ctx.canvas).off("click");
-              $(ctx.canvas).off("mousemove");
-              actualities[1].func();
-            } else if (event.x * scaler.x < startLocation.x + spaceWidth * 8 && event.x * scaler.x > startLocation.x + spaceWidth * 6 && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
-              drawOption(actualities[0].text, 0);
-              drawOption(actualities[1].text, 1);
-              drawChosen(actualities[2].text, 2);
-              $(ctx.canvas).off("click");
-              $(ctx.canvas).off("mousemove");
-              actualities[2].func();
-            }
-          });
+          // $(ctx.canvas).on("click", function () {
+          //   if (event.x * scaler.x < startLocation.x + spaceWidth * 2 && event.x * scaler.x > startLocation.x && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
+          //     drawChosen(actualities[0].text, 0);
+          //     drawOption(actualities[1].text, 1);
+          //     drawOption(actualities[2].text, 2);
+          //     $(ctx.canvas).off("click");
+          //     $(ctx.canvas).off("mousemove");
+          //     actualities[0].func();
+          //   } else if (event.x * scaler.x < startLocation.x + spaceWidth * 5 && event.x * scaler.x > startLocation.x + spaceWidth * 3 && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
+          //     drawOption(actualities[0].text, 0);
+          //     drawChosen(actualities[1].text, 1);
+          //     drawOption(actualities[2].text, 2);
+          //     $(ctx.canvas).off("click");
+          //     $(ctx.canvas).off("mousemove");
+          //     actualities[1].func();
+          //   } else if (event.x * scaler.x < startLocation.x + spaceWidth * 8 && event.x * scaler.x > startLocation.x + spaceWidth * 6 && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
+          //     drawOption(actualities[0].text, 0);
+          //     drawOption(actualities[1].text, 1);
+          //     drawChosen(actualities[2].text, 2);
+          //     $(ctx.canvas).off("click");
+          //     $(ctx.canvas).off("mousemove");
+          //     actualities[2].func();
+          //   }
+          // });
 
           drawOption(1, 0, true);
           drawOption(2, 1, true);
           drawOption(3, 2, true);
-          // prepTurnEnd();
+
+          const { chosen } = await fetchPlayerInput(clientId, 'penalty');
+          [0, 1, 2].filter(i => i !== chosen).forEach(i => drawOption(actualities[i].text, i));
+          drawChosen(chosen);
+          actualities[chosen].func()
         },
         "carpathia": function () {
           if (unleashed) {
@@ -633,16 +637,16 @@ function Game(context, logHolder, tokenTracker) {
               }
               successes = 0;
               if (tempSuccess == 3) {
-                $(ctx.canvas).off("click");
-                $(ctx.canvas).off("mousemove");
+                // $(ctx.canvas).off("click");
+                // $(ctx.canvas).off("mousemove");
                 sendBoardViewMessage("unleashed~" + clientNum + "~");
               } else
                 setTimeout(showCarpathiaDice, 1);
             } else {
               sendBoardViewMessage("broadcast~" + clientName + " failed to summon the antiChrist. Dammit!");
               carpathiaChance -= carpathiaDecreaseAmount;
-              $(ctx.canvas).off("click");
-              $(ctx.canvas).off("mousemove");
+              // $(ctx.canvas).off("click");
+              // $(ctx.canvas).off("mousemove");
               prepTurnEnd();
             }
           }
@@ -658,33 +662,33 @@ function Game(context, logHolder, tokenTracker) {
             }
           });
           var lastHover;
-          $(ctx.canvas).on("mousemove", function () {
-            if (rolling[0] && event.x * scaler.x < startLocation.x + spaceWidth * 2 && event.x * scaler.x > startLocation.x && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
-              if (!hovering[0]) {
-                lastHover = 0;
-                hovering[0] = true;
-                drawCarpathiaDieOnce(0, true, true);
-              }
-            } else if (rolling[1] && event.x * scaler.x < startLocation.x + spaceWidth * 5 && event.x * scaler.x > startLocation.x + spaceWidth * 3 && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
-              if (!hovering[1]) {
-                lastHover = 1;
-                hovering[1] = true;
-                drawCarpathiaDieOnce(1, true, true);
-              }
-            } else if (rolling[2] && event.x * scaler.x < startLocation.x + spaceWidth * 8 && event.x * scaler.x > startLocation.x + spaceWidth * 6 && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
-              if (!hovering[2]) {
-                lastHover = 2;
-                hovering[2] = true;
-                drawCarpathiaDieOnce(2, true, true);
-              }
-            } else {
-              hovering = [false, false, false];
-              if (lastHover !== undefined) {
-                drawCarpathiaDieOnce(lastHover, rollingSuccess[lastHover], false);
-                lastHover = undefined;
-              }
-            }
-          });
+          // $(ctx.canvas).on("mousemove", function () {
+          //   if (rolling[0] && event.x * scaler.x < startLocation.x + spaceWidth * 2 && event.x * scaler.x > startLocation.x && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
+          //     if (!hovering[0]) {
+          //       lastHover = 0;
+          //       hovering[0] = true;
+          //       drawCarpathiaDieOnce(0, true, true);
+          //     }
+          //   } else if (rolling[1] && event.x * scaler.x < startLocation.x + spaceWidth * 5 && event.x * scaler.x > startLocation.x + spaceWidth * 3 && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
+          //     if (!hovering[1]) {
+          //       lastHover = 1;
+          //       hovering[1] = true;
+          //       drawCarpathiaDieOnce(1, true, true);
+          //     }
+          //   } else if (rolling[2] && event.x * scaler.x < startLocation.x + spaceWidth * 8 && event.x * scaler.x > startLocation.x + spaceWidth * 6 && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
+          //     if (!hovering[2]) {
+          //       lastHover = 2;
+          //       hovering[2] = true;
+          //       drawCarpathiaDieOnce(2, true, true);
+          //     }
+          //   } else {
+          //     hovering = [false, false, false];
+          //     if (lastHover !== undefined) {
+          //       drawCarpathiaDieOnce(lastHover, rollingSuccess[lastHover], false);
+          //       lastHover = undefined;
+          //     }
+          //   }
+          // });
 
           drawCarpathiaDieOnce(0, false, false);
           drawCarpathiaDieOnce(2, false, false);
@@ -752,7 +756,7 @@ function Game(context, logHolder, tokenTracker) {
     this.response;
 
     // puts a roll animation on the screen and rolls dice
-    this.roll = function () {
+    this.roll = async function () {
       // var roll = Math.round(Math.random()*5) + 1;
       // var roll;
 
@@ -768,7 +772,7 @@ function Game(context, logHolder, tokenTracker) {
           ctx.globalAlpha = 0.5;
           ctx.drawImage(diceImages[num], point.x, point.y, spaceWidth * 3, spaceWidth * 3);
           ctx.globalAlpha = ga;
-          setTimeout(showDiceNumber, 50, (num + 1) % 6);
+          setTimeout(showDiceNumber, 100, (num + 1) % 6);
         } else {
           const realRollNum = nextRollValue === -1 ? num : nextRollValue;
           sendBoardViewMessage("rolled~" + (realRollNum + 1) + "~" + clientNum + "~");
@@ -776,33 +780,27 @@ function Game(context, logHolder, tokenTracker) {
         }
       }
 
-      $(ctx.canvas).on("click", function () {
-        rolling = false;
-        $(ctx.canvas).off("click");
-        $("body").off("keyup");
-        // if(event.x > parseInt($(ctx.canvas).css("width"))/2-spaceWidth*1.5*parseInt($(ctx.canvas).css("width"))/ctx.canvas.width &&
-        //   event.x < parseInt($(ctx.canvas).css("width"))/2+spaceWidth*1.5*parseInt($(ctx.canvas).css("width"))/ctx.canvas.width &&
-        //   event.y > parseInt($(ctx.canvas).css("height"))/2-spaceWidth*1.5*parseInt($(ctx.canvas).css("height"))/ctx.canvas.height &&
-        //   event.y < parseInt($(ctx.canvas).css("height"))/2+spaceWidth*1.5*parseInt($(ctx.canvas).css("height"))/ctx.canvas.height)
-        // {
-        // }
-      });
+      // $(ctx.canvas).on("click", function () {
+      //   rolling = false;
+      //   $(ctx.canvas).off("click");
+      //   $("body").off("keyup");
+      // });
 
-      $("body").on("keyup", function () {
-        if (event.which != 32)
-          return;
-        rolling = false;
-        $(ctx.canvas).off("click");
-        $("body").off("keyup");
-      });
+      // $("body").on("keyup", function () {
+      //   if (event.which != 32)
+      //     return;
+      //   rolling = false;
+      //   $(ctx.canvas).off("click");
+      //   $("body").off("keyup");
+      // });
 
       canLib.drawRectangle(point.x - spaceWidth * 0.09, point.y - spaceWidth * 0.09, spaceWidth * 3.18, spaceWidth * 3.18, "black");
       canLib.drawRectangle(point.x - spaceWidth * 0.06, point.y - spaceWidth * 0.06, spaceWidth * 3.12, spaceWidth * 3.12, "white");
       canLib.drawRectangle(point.x - spaceWidth * 0.03, point.y - spaceWidth * 0.03, spaceWidth * 3.06, spaceWidth * 3.06, "black");
       showDiceNumber(0);
 
-
-      // this.move(roll);
+      await fetchPlayerInput(clientId, 'roll');
+      rolling = false;
     }
 
     this.move = function (roll) {
@@ -1315,16 +1313,16 @@ function Game(context, logHolder, tokenTracker) {
             // $("#startGameButton").css("font-size", spaceWidth + "px");
             $(".cover, .coverContainer").css("display", "block");
             $("#startGameButton").focus();
-            $("#startGameButton").on("keyup", function () {
-              if (event.which != 32)
-                return;
-              $("#startGameButton").off("click");
-              $("#startGameButton").off("keyup");
-              $(".cover, .coverContainer").css("display", "none");
-              addToLogger("You are ready!");
-              sendBoardViewMessage("ready~" + clientNum + '~');
-              // countDownToStart(30);
-            });
+            // $("#startGameButton").on("keyup", function () {
+            //   if (event.which != 32)
+            //     return;
+            //   $("#startGameButton").off("click");
+            //   $("#startGameButton").off("keyup");
+            //   $(".cover, .coverContainer").css("display", "none");
+            //   addToLogger("You are ready!");
+            //   sendBoardViewMessage("ready~" + clientNum + '~');
+            //   // countDownToStart(30);
+            // });
 
             $("#startGameButton").on("click", function () {
               $("#startGameButton").off("click");

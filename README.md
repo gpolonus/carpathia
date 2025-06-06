@@ -51,6 +51,7 @@ const playerInput = await getPlayerInput(currentPlayer, inputNeeded)
 - [ ] make it easily togglable between all in one room and all separate
   - could do this pretty easily by just putting the controls adjacent to the board and abstracting both to work together or standalone
 - [ ] oauth the endpoints
+- [ ] players select an icon to use for their play piece
 
 
 
