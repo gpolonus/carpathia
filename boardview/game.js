@@ -1292,56 +1292,6 @@ function Game(context, logHolder, tokenTracker) {
 
             board.makeNewPlayer(clientNum, clientName);
           }
-          if (args[1] != '') {
-            // ask("Are you ready to play?", {
-            //   "Start" : function() {
-            //     addToLogger("You are ready!");
-            //     sendMessage("ready~" + clientNum + '~');
-            //     return true;
-            //   }
-            // });
-            $(".coverContainerContents").css("background-color", board.players[clientNum].color);
-            $(".cover").css("background-color", "#000");
-            $(".coverContainer h2").css("color", board.players[clientNum].color.replace(/0/g, "F").replace(/f/g, "0"));
-            $(".coverContainer h4").css("color", board.players[clientNum].color.replace(/0/g, "F").replace(/f/g, "0"));
-            $(".coverContainerContents").html("" +
-              "<ul>" +
-              "<li><h2>Are you, <span style='font-weight:bold'>" + clientName + "</span>, ready to start the game?</h2></li>" +
-              "<li><button id='startGameButton' class='bigButton'>Ready!</button></li>" +
-              "</ul>" +
-              "");
-            // $("#startGameButton").css("font-size", spaceWidth + "px");
-            $(".cover, .coverContainer").css("display", "block");
-            $("#startGameButton").focus();
-            // $("#startGameButton").on("keyup", function () {
-            //   if (event.which != 32)
-            //     return;
-            //   $("#startGameButton").off("click");
-            //   $("#startGameButton").off("keyup");
-            //   $(".cover, .coverContainer").css("display", "none");
-            //   addToLogger("You are ready!");
-            //   sendBoardViewMessage("ready~" + clientNum + '~');
-            //   // countDownToStart(30);
-            // });
-
-            $("#startGameButton").on("click", function () {
-              $("#startGameButton").off("click");
-              $("#startGameButton").off("keyup");
-              $(".cover, .coverContainer").css("display", "none");
-              addToLogger("You are ready!");
-              sendBoardViewMessage("ready~" + clientNum + '~');
-              // countDownToStart(30);
-            });
-
-            function countDownToStart(num) {
-              if (num != -1) {
-                $(".coverContainerContents").html("<h2 id='countDown'>" + num + "</h2>");
-                setTimeout(countDownToStart, 1000, num - 1);
-              } else {
-                sendBoardViewMessage("ready~" + clientNum + '~');
-              }
-            }
-          }
           break;
 
           // tells you that the game is starting
