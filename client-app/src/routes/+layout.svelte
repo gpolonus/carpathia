@@ -2,6 +2,16 @@
   import Alert from '../lib/alert.svelte';
   import { alertMessage } from '$lib';
 
+  const DEFAULTS = {
+    primary: '#008000',
+    secondary: '#662233',
+    text: 'white',
+  }
+  let primaryColor = localStorage.getItem('primary-color') || DEFAULTS.primary
+  let secondaryColor = localStorage.getItem('secondary-color') || DEFAULTS.secondary
+  let textColor = localStorage.getItem('text-color') || DEFAULTS.text
+  let colorStyles = `--primary:${primaryColor};--secondary:${secondaryColor};--text-color:${textColor}`
+
 </script>
 
 <style>
@@ -91,7 +101,7 @@
   }
 </style>
 
-<div class="body">
+<div class="body" style={colorStyles}>
   <div class="header">
     <h2>
       MERRY CRINGEMAS

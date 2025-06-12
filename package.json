@@ -4,11 +4,15 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"frontend:build": "cd clientapp && vite build && cd ../boardview && vite build",
-		"backend:dev": "cd backend && nodemon ./sse.js",
-		"clientapp:dev": "cd clientapp && vite dev --port 3001",
-		"boardview:dev": "cd boardview && vite dev --port 3002",
-		"dev": "concurrently 'npm run clientapp:dev' 'npm run boardview:dev' 'npm run backend:dev'"
+    "backend:dev": "cd backend && nodemon ./sse.js",
+    "backend": "cd backend && node sse.js",
+
+    "clientapp:dev": "cd client-app && vite dev --port 3001",
+		"clientapp:build": "cd client-app && vite build",
+    "clientapp": "npm run clientapp:build && cd client-app && PORT=3004 node build",
+
+    "boardview:dev": "cd boardview && vite dev --port 3002",
+    "boardview:build": "cd boardview && ./build.sh"
 	},
 	"dependencies": {
 		"body-parser": "^2.2.0",

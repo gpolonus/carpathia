@@ -25,6 +25,8 @@ server.use(serverBasePath, serverRouter)
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({extended: false}));
 
+let closers = {};
+
 async function resetState() {
   app.resetState();
 }
@@ -50,33 +52,57 @@ serverRouter.get('/connect', cors(), (req, res) => {
   };
   res.writeHead(200, headers);
 
-  const clientId = Date.now().toString();
+  let client, clientId = req.query.clientId
+  if (clientId && closers[clientId]) {
+    client = closers[clientId].client
+    client.res = res
+    delete closers[clientId]
 
-  const client = {
-    id: clientId,
-    name: generate(2).join(' '), // For logging purposes
-    res,
-    send(type, data) {
-      console.log(`sent '${client.name}' a ${type} message with data:`, data)
-      this.res.write(`data: ${JSON.stringify({ type, data })}\n\n`)
-    },
-  };
+    client.send('reconnected')
+    app.clientReconnected(client, { ...req.query });
+  } else {
+    clientId = Date.now().toString();
+    client = {
+      id: clientId,
+      name: generate(2).join(' '), // For logging purposes
+      res,
+      send(type, data) {
+        console.log(`sent '${this.name}' a ${type} message with data:`, data)
+        this.res.write(`data: ${JSON.stringify({ type, data })}\n\n`)
+      },
+    };
 
-  app.clientOpened(client, { ...req.query });
+    app.clientOpened(client, { ...req.query });
 
-  client.send('clientId', { clientId })
+    client.send('clientId', { clientId })
+  }
 
   req.on('close', () => {
+    closers[client.id] = {
+      client,
+      closingTime: Date.now()
+    };
+
     app.clientClosed(client);
   });
 });
 
+setInterval(() => {
+  const minimumTime = Date.now() - 10 * 60 * 1000
+  closers = Object.fromEntries(
+    Object.entries(closers)
+      .filter(
+        ([id, { closingTime }]) => closingTime > minimumTime
+      )
+  )
+} , 2 * 60 * 1000)
+
 serverRouter.get('/message', (req, res) => {
   // TODO: get angry without id and action query params
-  const args = { ...req.query }
-  const clientId = args.id
-  const action = args.action
-  const responseInstruction = app.clientMessage(clientId, action, args)
+  const params = { ...req.query }
+  const clientId = params.id
+  const action = params.action
+  const responseInstruction = app.clientMessage(clientId, action, params)
 
   if (typeof responseInstruction === 'array') {
     const [errorCode, message] = responseInstruction

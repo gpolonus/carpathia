@@ -3,9 +3,11 @@
     gameStatusStore,
     openConnection,
     sendMessage,
-    GAME_STATUSES
+    GAME_STATUSES,
+    playerName
   } from '$lib';
   import { onMount } from 'svelte';
+    import PlayerInput from '../lib/playerInputs/PlayerInput.svelte';
 
   onMount(async () => {
     console.log('opening connection')
@@ -13,7 +15,7 @@
     console.log('opened connection')
   });
 
-  let playerName, nameErrorMessage, nameSubmitted = false;
+  let playerNameInput, nameErrorMessage;
 
   const swears = [
     'fuck',
@@ -24,23 +26,23 @@
   ];
 
   const signIn = async () => {
-		if (playerName > 0) {
+		if (playerNameInput > 0) {
 			nameErrorMessage = "You really shouldn't put a tilde in your name.";
 			return;
-		} else if (playerName == '') {
+		} else if (playerNameInput == '') {
 			nameErrorMessage = "Don't be modest, give yourself a name!";
 			return;
-		} else if (swears.some(s => playerName.indexOf(s) != -1)) {
-			if (confirm("Are you sure you really want " + playerName + " to be your name?"))
+		} else if (swears.some(s => playerNameInput.indexOf(s) != -1)) {
+			if (confirm("Are you sure you really want " + playerNameInput + " to be your name?"))
 				alert("Alrighty then. You crass bastard.");
 			else {
 				alert("Great choice! I think it's better for people to have real names too.");
 			}
 		}
 
-		const clientName = playerName.replace(/[^a-zA-Z ]/g, "");
+		const clientName = playerNameInput.replace(/[^a-zA-Z ]/g, "");
     await sendMessage('setName', { name: clientName });
-    nameSubmitted = true;
+    playerName.value = clientName;
   }
 </script>
 
@@ -66,14 +68,14 @@
 </h1>
 <div class="content">
 {#if gameStatusStore.value === GAME_STATUSES.UNSTARTED}
-  {#if !nameSubmitted}
+  {#if !playerName.value}
   <div class="coverContainerContents">
     <ul>
       <li>
         <h2>SIGN IN TO PLAY</h2>
       </li>
       <li>
-        Name: <input type="text" id="signInName" bind:value={playerName} />
+        Name: <input type="text" id="signInName" bind:value={playerNameInput} />
       </li>
       <li class="name-error">
         {nameErrorMessage}
@@ -88,6 +90,7 @@
   {/if}
 {:else if gameStatusStore.value === GAME_STATUSES.STARTED}
   <h2>The game started!</h2>
+  <PlayerInput />
 {:else if gameStatusStore.value === GAME_STATUSES.FINISHED}
   <div class="the-end">
     <h1>THE END</h1>

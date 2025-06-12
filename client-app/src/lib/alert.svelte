@@ -1,5 +1,6 @@
 <script>
   import { clearModal } from '$lib'
+    import { alertMessage } from './stores.svelte';
 
   let {
     type,

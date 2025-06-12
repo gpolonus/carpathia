@@ -2,7 +2,7 @@
 import { LitElement, css, html } from 'lit';
 import { createRef, ref } from 'lit/directives/ref.js';
 
-export default class BoardviewPlayers extends LitElement {
+export default class GreenCard extends LitElement {
 
   static styles = css`
     dialog {
@@ -37,6 +37,14 @@ export default class BoardviewPlayers extends LitElement {
     dialog.colors div.field {
       padding: 1rem;
     }
+
+    .correct {
+      color: green;
+    }
+
+    .wrong {
+      color: red;
+    }
   `;
 
   static properties = {
@@ -45,7 +53,9 @@ export default class BoardviewPlayers extends LitElement {
     // wrong and not triggering changes for some reason.
     // TODO: Fix this. Probably just need to make this object correct or add
     // a converter or something.
-    players: { hasChanged: () => true }
+    card: { type: Object },
+    answer: { type: String },
+    correctAnswer: { type: String }
   };
 
   dialogRef = createRef();
@@ -56,31 +66,43 @@ export default class BoardviewPlayers extends LitElement {
     this.players = []
   }
 
-  open(players) {
-    this.players = players || []
+  open(card, answer, correctAnswer) {
+    this.card = card || {}
+    this.answer = answer;
+    this.correctAnswer = correctAnswer
     this.dialogRef.value.showModal()
   }
 
   close() {
     this.dialogRef.value.close()
-    this.dispatchEvent(new CustomEvent('start', { bubbles: false }))
   }
 
-// TODO: throw an error on click of the start button without any playerData
   render() {
+    const optionPrefixes = ['A', 'B', 'C', 'D',]
+    const card = this.card || {}
+    const isCorrect = this.correctAnswer == this.answer
+    const correctIndex = this.correctAnswer ? this.correctAnswer - 1 : -1
+    const wrongIndex = this.answer ? this.answer - 1 : -1
     return html`
       <dialog ${ref(this.dialogRef)} class="modal-body">
-        <h1>Welcome to Carpathia!</h1>
-        <h2>Waiting for players</h2>
-        ${this.players.map(p => html`
-          <h4 class=${p.color}>${p.name}</h4>
+        <h1>Question:</h1>
+        <h2>${card.question}</h2>
+        ${card.options?.map((o, i) => html`
+          <h4 class="${[
+            correctIndex === i ? 'correct' : '', !isCorrect && wrongIndex === i ? 'wrong' : ''
+          ].join(' ')}">
+            ${optionPrefixes[i]}: ${o}
+          </h4>
         `)}
-        <div>
-          <button @click=${this.close}>Start</button>
-        </div>
+        ${correctIndex !== -1
+          ? html`<h3 class="${isCorrect ? 'correct' : 'wrong'}">
+              ${isCorrect ? 'CORRECT' : 'WRONG'}
+            </h3>`
+          : ''
+        }
       </dialog>
     `;
   }
 }
 
-customElements.define('boardview-players', BoardviewPlayers);
+customElements.define('green-card', GreenCard);

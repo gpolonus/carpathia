@@ -4,54 +4,49 @@ This time it's gonna be so good.
 
 ## ToDos
 
-- [ ] **The BoardView App**
+- [x] **The BoardView App**
   - get this working with SSEs
-    - [o] move the old business logic into the new app-logic file
+    - [x] move the old business logic into the new app-logic file
   - make this only show what's happening on the board, doesn't need any user input
     - will send out message asking for player input, player will give input on their screen, then the boardview will get the input and continue
-      - example:
-```javascript
-function getPlayerInput(currentPlayer, inputNeeded) {
-  return new Promise(resolve => {
-    addEventListener(new CustomEvent('remoteUserInputReceived'), (e) => {resolve(e)})
-    // will also need to do event listener cleanup
-    // and will need to fire this event somewhere else
-
-    sendMessage('Hey server, I need this input from this player etc etc')
-  })
-}
-
-// ...
-
-const playerInput = await getPlayerInput(currentPlayer, inputNeeded)
-
-```
-  - better player standings UI
-- [ ] **The Client Controls App**
+- [x] **The Client Controls App**
+- [x] **Game Points**
+  - just have it as some multiplier of tokens EZPZ
+- [x] might be able to fix the reconnection issues by having the BE ask the FE for what its clientId and then if it matches, keep going from where it left off
+- [ ] **get rid of alerts in the boardview**
+- [ ] write and then use a reconnecting testing plan once the rest of the shit is done
 - [ ] **Nginx Setup for all this**
   - all of this off of the cringemas subdomain or no?
     - would help with cert provisioning
-  - [ ] get all the paths and ports set up correctly for local and prod
-- [ ] **Game Points**
+  - [x] get all the paths and ports set up correctly for local and prod
+- [ ] all the FE apps need error modals for when the server falls over
+  - maybe a timed reload or something
+    - apps will try to reconnect automatically
+  - boardview needs an error modal
 - [ ] **admin controls**
-- [ ] **get rid of alerts in the boardview**
-- [ ] **Icons for everything**
 
 
 ## Ideas
 
-- [x] separate the game logic from the SSE logic
-- [ ] move the canvas images to something more efficient
-- [ ] add all the animation smoothing [best practices](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Basic_animations)
+- move the canvas images to something more efficient
+- add all the animation smoothing [best practices](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Basic_animations)
   - and better animations in general, the dice one sucks
-- [ ] custom player faces
-- [ ] start programming in TS so that I can reuse things more easily
+- custom player faces
+- start programming in TS so that I can reuse things more easily
   - It makes reusability tougher if I have to reread everything every time
-- [ ] make the connection erroring more graceful
-- [ ] make it easily togglable between all in one room and all separate
+- make the connection erroring more graceful
+- make it easily togglable between all in one room and all separate
   - could do this pretty easily by just putting the controls adjacent to the board and abstracting both to work together or standalone
-- [ ] oauth the endpoints
-- [ ] players select an icon to use for their play piece
-
-
-
+- oauth the endpoints
+- players select an icon to use for their play piece
+- possibly could use multiple types of FE apps that could use different message endpoints to reduce confusion in the message transport layer
+  - could also use multiple GameApp instances for this
+- refactor the BE reconnection data to make more sense
+  - does the data live on the FE or the BE to make reconnection easier? FE right?
+- make resuming the stores optional. Maybe they wanted to reset everything?
+- TIL: syncing FE and BE data is hard. Reconnection solutioning makes both of them a point of truth
+  - and keeping players in sync with each other could be a real bitch
+- save boardview stuff in localStorage later on. It'll fuck the whole thing if it falls over, but it's unlikely to be refreshed
+  - OOOH I can add a blocker against that
+- start with the Carpathia likelihood pretty low and make it slightly more likely to roll over time (with each additional game roll)
+  - LMAO I did this already forever ago

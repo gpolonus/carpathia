@@ -2,6 +2,8 @@
 // TODO: Add the ability for other players to chime in with input even when it's not asked for
 // The above might be accomplishable without changing this
 
+import { sendMessage } from "../frontend-sse";
+
 // picking a random outcome of 3
   // // $(ctx.canvas).on("click", function () {
 // rolling carpathia dice
@@ -22,7 +24,7 @@
 
 export function fetchPlayerInput(clientId, type) {
   return new Promise((resolve, reject) => {
-    sendMessage('playerInput', {
+    sendMessage('requestPlayerInput', {
       clientId,
       type
     });
@@ -37,7 +39,7 @@ export function fetchPlayerInput(clientId, type) {
   });
 }
 
-export function receivedPlayerInput(clientId, input) {
-  const e = new CustomEvent('playerInput', { detail: { clientId, input } });
+export function receivedPlayerInput(data) {
+  const e = new CustomEvent('playerInput', { detail: data });
   dispatchEvent(e)
 }

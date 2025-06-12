@@ -1,24 +1,29 @@
-// import { clearModal, openModal } from "..";
 
 let clientId;
-// Only holding here for reconnection purposes
-// TODO: Figure out what data needs to be stored here to indicate that the
-// player is playing
-let chosenCharacters;
 let disconnected = false;
+let source;
 
 // TODO: Fix this to not use the process
 export const url = import.meta.env.VITE_SERVER_PATH
 
-export const openConnection = (handleMessage, onOpen, onReconnect, onError) => {
-  const source = new EventSource(`${url}/connect`);
+export const openConnection = (handleMessage, onOpen, onReconnect, onError, fetchState) => {
+  console.log('readyState:', source?.readyState)
+  if (source?.readyState === EventSource.OPEN) {
+    console.log('Already Connected')
+    return
+  }
+
+  clientId = localStorage.getItem('clientId')
+  const clientIdParam = clientId ? `?clientId=${clientId}` : '';
+
+  source = new EventSource(`${url}/connect${clientIdParam}`);
 
   source.addEventListener("open", (e) => {
     console.log("connected", e);
 
     onOpen(e);
 
-    if (disconnected && chosenCharacters) {
+    if (disconnected && clientId) {
       disconnected = false
 
       onReconnect(e);
@@ -31,8 +36,11 @@ export const openConnection = (handleMessage, onOpen, onReconnect, onError) => {
     if (type === 'clientId') {
       console.log('Setting clientId:', data.clientId)
       clientId = data.clientId
+      // TODO: Clear out the clientId when the game is over
+      localStorage.setItem('clientId', clientId)
+    } else {
+      handleMessage(type, data)
     }
-    handleMessage(type, data)
   });
 
   // SSE error or termination

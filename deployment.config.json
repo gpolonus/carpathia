@@ -1,0 +1,14 @@
+{
+  "apps": [
+    {
+      "name": "carpathia-backend",
+      "script": "npm",
+      "args": "run backend"
+    },
+    {
+      "name": "carpathia-clientapp",
+      "script": "npm",
+      "args": "run clientapp"
+    }
+  ]
+}

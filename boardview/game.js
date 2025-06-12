@@ -5,6 +5,8 @@ import UtilityLibrary from './utils/utilityLibrary.js'
 import { fetchPlayerInput, receivedPlayerInput } from './utils/playerInput.js';
 
 function Game(context, logHolder, tokenTracker) {
+  let playerData = [];
+  let gonePlayers = [];
   var ctx = context;
   var log = logHolder;
   logHolder.addEventListener("webkitAnimationEnd", function () {
@@ -22,14 +24,24 @@ function Game(context, logHolder, tokenTracker) {
   var winner = false;
   var board = new Board();
   var carpathia = new Carpathia();
-  var carpathiaChance = 2;
-  var carpathiaDecreaseAmount = 0.25;
-  var nextRollValue = -1;
-  window.setNextRollValue = num => nextRollValue = num;
+  // A value of 2 equates to a 1 in 8 chance of rolling a success
+  // var carpathiaChance = 2;
+  var carpathiaChance = 0
+  // var carpathiaDecreaseAmount = 0.25;
+  var carpathiaDecreaseAmount = 0;
   var spaceWidth;
   var startSpot;
-  var clientName;
-  var clientNum;
+  let startOffset = 2;
+
+  let clientName, clientNum, clientId;
+  function setClientNum(num) {
+    num *= 1
+    clientNum = num
+    const player = playerData.find(({ playerNum }) => playerNum === num)
+    clientName = player?.name
+    clientId = player?.id
+  }
+
   board.drawBoard();
   var started = false;
   var unleashed = false;
@@ -44,11 +56,13 @@ function Game(context, logHolder, tokenTracker) {
       carpathiaDice[i].push(new Image());
       carpathiaDice[i][j].src = "images/" + carpathiaWords[i] + "" + j + ".png";
     }
-
   }
+
   var devilFace = new Image();
   devilFace.src = "images/devil.png";
 
+  let lieSuccessTokens = 5;
+  let truthSuccessTokens = 2;
 
   function Board(num) {
     this.sideNum = num == undefined ? 10 : num;
@@ -149,16 +163,16 @@ function Game(context, logHolder, tokenTracker) {
     }
     makeBoard();
 
-    this.makeNewPlayer = function (num, name) {
-      // need to know num via server
-      // will get instantiated and called upon opening of the socket
-      // that.players.push(new Player(num, name));
-      that.players[num] = new Player(num, name.replace(/[^a-zA-Z ]/g, ""), playerColors[num]);
+    this.makeNewPlayer = function ({ id, name, playerNum, color }) {
+      if (!color)
+        color = playerColors[playerNum % playerColors.length]
+      that.players[playerNum] = new Player(id, playerNum, name.replace(/[^a-zA-Z ]/g, ""), color);
     }
 
     // get the start space at the specified number
     this.getStart = function (num) {
-      return spacesArray[Math.round(this.sideNum * 2 / 3 * num)][0];
+      // TODO: take away the +1, that's there for testing purposes
+      return spacesArray[Math.round(this.sideNum * 2 / 3 * num) + startOffset][0];
     }
 
     function drawCarpathiaDieOnce(place, isThisADie, hovering, failure) {
@@ -251,7 +265,7 @@ function Game(context, logHolder, tokenTracker) {
       this.draw = function (drawingBig) {
         drawingFunctions[this.type](drawingBig);
         if (this.topToken != undefined) {
-          ctx.fillStyle = board.players[this.topToken].color;
+          ctx.fillStyle = board.players[this.topToken]?.color;
           ctx.strokeStyle = "black";
           ctx.beginPath();
           ctx.moveTo(this.x + 0.1 * spaceWidth, this.y - spaceWidth / 2);
@@ -273,10 +287,6 @@ function Game(context, logHolder, tokenTracker) {
 
       this.placeTopToken = function (num) {
         this.topToken = num;
-      }
-
-      this.getTopToken = function () {
-        return topToken;
       }
 
       let width;
@@ -380,7 +390,7 @@ function Game(context, logHolder, tokenTracker) {
         "blue": function () {
           // make this a store place?
           sendBoardViewMessage("broadcast~" + clientName + " landed on a blue space. They get tokens!");
-          sendBoardViewMessage("getTokens~" + clientNum + "~" + Math.round(Math.random() * 5));
+          sendBoardViewMessage("getTokens~" + clientNum + "~" + (Math.round(Math.random() * 5) + 1));
           prepTurnEnd();
         },
         "black": function () {
@@ -429,36 +439,6 @@ function Game(context, logHolder, tokenTracker) {
             }
           }
 
-          function drawHovering(text, place, big) {
-
-            var start = {
-              x: startLocation.x + place * spaceWidth * 3,
-              y: startLocation.y
-            };
-            canLib.drawRectangle(start.x - spaceWidth * 0.4, start.y - spaceWidth * 0.4, spaceWidth * 2.8, spaceWidth * 2.8, "#FF5C00");
-            canLib.drawRectangle(start.x - spaceWidth * 0.2, start.y - spaceWidth * 0.2, spaceWidth * 2.4, spaceWidth * 2.4, "#F00");
-            canLib.drawRectangle(start.x, start.y, spaceWidth * 2, spaceWidth * 2, "black");
-            ctx.fillStyle = "#fff";
-            if (big) {
-              ctx.font = spaceWidth * 3 + "px Courier New";
-              ctx.fillText(("" + text)[0], start.x, start.y + spaceWidth * 2);
-            } else {
-              ctx.font = spaceWidth / 3 + "px Courier New";
-              var str = '';
-              var words = text.split(' ');
-              var j = 1;
-              for (var i = 0; i < words.length; i++) {
-                if (str.length + words[i].length + 1 > 10) {
-                  ctx.fillText(str, start.x, start.y + spaceWidth / 3 * (j++));
-                  str = "";
-                  i--;
-                } else
-                  str += (str == "" ? "" : " ") + words[i];
-              }
-              ctx.fillText(str, start.x, start.y + spaceWidth / 3 * (j++));
-            }
-          }
-
           function drawChosen(text, place) {
 
             var start = {
@@ -484,14 +464,15 @@ function Game(context, logHolder, tokenTracker) {
             ctx.strokeText(str, start.x, start.y + spaceWidth / 3 * (j++));
           }
 
-          var possibilities = [{
-              text: "You got Griffin's website! Good job!",
-              func: function () {
-                window.open("https://grifstuf.com");
-                sendBoardViewMessage("broadcast~" + clientName + " got to go to Griffin's website!");
-                prepTurnEnd();
-              }
-            },
+          var possibilities = [
+              // {
+              //   text: "You got Griffin's website! Good job!",
+              //   func: function () {
+              //     window.open("https://grifstuf.com");
+              //     sendBoardViewMessage("broadcast~" + clientName + " got to go to Griffin's website!");
+              //     prepTurnEnd();
+              //   }
+              // },
             // {
             //   text: "You get 10 confirms!",
             //   func: function(){
@@ -544,32 +525,6 @@ function Game(context, logHolder, tokenTracker) {
             possibilities.splice(Math.floor(Math.random() * possibilities.length), 1)[0],
             possibilities.splice(Math.floor(Math.random() * possibilities.length), 1)[0]
           ];
-          var scaler = getScaler();
-
-          // $(ctx.canvas).on("click", function () {
-          //   if (event.x * scaler.x < startLocation.x + spaceWidth * 2 && event.x * scaler.x > startLocation.x && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
-          //     drawChosen(actualities[0].text, 0);
-          //     drawOption(actualities[1].text, 1);
-          //     drawOption(actualities[2].text, 2);
-          //     $(ctx.canvas).off("click");
-          //     $(ctx.canvas).off("mousemove");
-          //     actualities[0].func();
-          //   } else if (event.x * scaler.x < startLocation.x + spaceWidth * 5 && event.x * scaler.x > startLocation.x + spaceWidth * 3 && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
-          //     drawOption(actualities[0].text, 0);
-          //     drawChosen(actualities[1].text, 1);
-          //     drawOption(actualities[2].text, 2);
-          //     $(ctx.canvas).off("click");
-          //     $(ctx.canvas).off("mousemove");
-          //     actualities[1].func();
-          //   } else if (event.x * scaler.x < startLocation.x + spaceWidth * 8 && event.x * scaler.x > startLocation.x + spaceWidth * 6 && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
-          //     drawOption(actualities[0].text, 0);
-          //     drawOption(actualities[1].text, 1);
-          //     drawChosen(actualities[2].text, 2);
-          //     $(ctx.canvas).off("click");
-          //     $(ctx.canvas).off("mousemove");
-          //     actualities[2].func();
-          //   }
-          // });
 
           drawOption(1, 0, true);
           drawOption(2, 1, true);
@@ -586,6 +541,7 @@ function Game(context, logHolder, tokenTracker) {
             prepTurnEnd();
             return;
           }
+
           sendBoardViewMessage("broadcast~" + clientName + " is rolling the CARPATHIA dice!~");
           var startLocation = {
             x: ctx.canvas.width / 2 - 4 * spaceWidth,
@@ -640,6 +596,7 @@ function Game(context, logHolder, tokenTracker) {
                 // $(ctx.canvas).off("click");
                 // $(ctx.canvas).off("mousemove");
                 sendBoardViewMessage("unleashed~" + clientNum + "~");
+                clearCarpathiaHandling()
               } else
                 setTimeout(showCarpathiaDice, 1);
             } else {
@@ -647,48 +604,35 @@ function Game(context, logHolder, tokenTracker) {
               carpathiaChance -= carpathiaDecreaseAmount;
               // $(ctx.canvas).off("click");
               // $(ctx.canvas).off("mousemove");
+              clearCarpathiaHandling()
               prepTurnEnd();
             }
           }
 
-          var scaler = getScaler();
-          $(ctx.canvas).on("click", function () {
-            if (event.x * scaler.x < startLocation.x + spaceWidth * 2 && event.x * scaler.x > startLocation.x && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
-              rolling[0] = false;
-            } else if (event.x * scaler.x < startLocation.x + spaceWidth * 5 && event.x * scaler.x > startLocation.x + spaceWidth * 3 && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
-              rolling[1] = false;
-            } else if (event.x * scaler.x < startLocation.x + spaceWidth * 8 && event.x * scaler.x > startLocation.x + spaceWidth * 6 && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
-              rolling[2] = false;
-            }
-          });
-          var lastHover;
-          // $(ctx.canvas).on("mousemove", function () {
-          //   if (rolling[0] && event.x * scaler.x < startLocation.x + spaceWidth * 2 && event.x * scaler.x > startLocation.x && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
-          //     if (!hovering[0]) {
-          //       lastHover = 0;
-          //       hovering[0] = true;
-          //       drawCarpathiaDieOnce(0, true, true);
-          //     }
-          //   } else if (rolling[1] && event.x * scaler.x < startLocation.x + spaceWidth * 5 && event.x * scaler.x > startLocation.x + spaceWidth * 3 && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
-          //     if (!hovering[1]) {
-          //       lastHover = 1;
-          //       hovering[1] = true;
-          //       drawCarpathiaDieOnce(1, true, true);
-          //     }
-          //   } else if (rolling[2] && event.x * scaler.x < startLocation.x + spaceWidth * 8 && event.x * scaler.x > startLocation.x + spaceWidth * 6 && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
-          //     if (!hovering[2]) {
-          //       lastHover = 2;
-          //       hovering[2] = true;
-          //       drawCarpathiaDieOnce(2, true, true);
-          //     }
-          //   } else {
-          //     hovering = [false, false, false];
-          //     if (lastHover !== undefined) {
-          //       drawCarpathiaDieOnce(lastHover, rollingSuccess[lastHover], false);
-          //       lastHover = undefined;
-          //     }
+          // var scaler = getScaler();
+          // $(ctx.canvas).on("click", function () {
+          //   if (event.x * scaler.x < startLocation.x + spaceWidth * 2 && event.x * scaler.x > startLocation.x && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
+          //     rolling[0] = false;
+          //   } else if (event.x * scaler.x < startLocation.x + spaceWidth * 5 && event.x * scaler.x > startLocation.x + spaceWidth * 3 && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
+          //     rolling[1] = false;
+          //   } else if (event.x * scaler.x < startLocation.x + spaceWidth * 8 && event.x * scaler.x > startLocation.x + spaceWidth * 6 && event.y * scaler.y > startLocation.y && event.y * scaler.y < startLocation.y + spaceWidth * 2) {
+          //     rolling[2] = false;
           //   }
           // });
+
+          const carpathiaRollHandler = (e) => {
+            const { rolledDie } = e.detail
+            rolling[{ CAR: 0, PAT: 1, HIA: 2 }[rolledDie]] = false
+          }
+
+          const clearCarpathiaHandling = () => {
+            fetchPlayerInput(clientId, 'closePlayerInput')
+            removeEventListener('playerInput', carpathiaRollHandler);
+          }
+
+          addEventListener('playerInput', carpathiaRollHandler);
+
+          fetchPlayerInput(clientId, 'carpathia');
 
           drawCarpathiaDieOnce(0, false, false);
           drawCarpathiaDieOnce(2, false, false);
@@ -734,12 +678,13 @@ function Game(context, logHolder, tokenTracker) {
     };
   }
 
-  function Player(num, name, color) {
+  function Player(id, num, name, color) {
     console.log({
       num,
       name,
       color
     });
+    this.id = id;
     this.num = num;
     this.name = name;
     this.image = new Image();
@@ -750,6 +695,7 @@ function Game(context, logHolder, tokenTracker) {
     var that = this;
     this.x = this.space.x;
     this.y = this.space.y;
+    // this.tokens = 0;
     this.tokens = 0;
     this.ready = false;
     this.color = color;
@@ -766,6 +712,10 @@ function Game(context, logHolder, tokenTracker) {
         y: ctx.canvas.height / 2 - spaceWidth * 1.5 + spaceWidth * 0.2
       };
 
+      // TODO: get rid of this when deploying to prod
+      let testingRollNumber = 1;
+      window.setRollNumber = (n) => testingRollNumber = n;
+
       function showDiceNumber(num) {
         if (rolling) {
           var ga = ctx.globalAlpha;
@@ -774,8 +724,9 @@ function Game(context, logHolder, tokenTracker) {
           ctx.globalAlpha = ga;
           setTimeout(showDiceNumber, 100, (num + 1) % 6);
         } else {
-          const realRollNum = nextRollValue === -1 ? num : nextRollValue;
-          sendBoardViewMessage("rolled~" + (realRollNum + 1) + "~" + clientNum + "~");
+          const realRollNum = testingRollNumber || (nextRollValue === -1 ? num : (nextRollValue + 1));
+          // const realRollNum = nextRollValue === -1 ? num : nextRollValue;
+          sendBoardViewMessage("rolled~" + (realRollNum) + "~" + clientNum + "~");
           nextRollValue = -1;
         }
       }
@@ -919,75 +870,81 @@ function Game(context, logHolder, tokenTracker) {
     board.players[clientNum].roll();
   }
 
-  function prepTurnEnd() {
-    setTimeout(function () {
-      // ask("Are you ready to end your turn?", {"Sure" : function(){
-      //   turnEnd();
-      //   return true;
-      // }});
-      $(".coverContainerContents").css("background-color", "#fff");
-      $(".cover").css("background-color", "#000");
-      $(".coverContainer h2").css("color", "#000");
-      $(".coverContainer h4").css("color", "#333");
-      $(".coverContainerContents").html("" +
-        "<ul>" +
-        "<li><h2><span class='name" + clientNum + "'>" + clientName + "</span>, are you ready to finish your turn?</h2></li>" +
-        "<li><button id='endTurnButton' class='bigButton'>Sure</button></li>" +
-        "</ul>" +
-        "");
-      $("#endTurnButton").css("font-size", spaceWidth + "px");
-      $(".cover, .coverContainer").css("display", "block");
-      $("#endTurnButton").focus();
-      $("#endTurnButton").on("keyup", function () {
-        if (event.which != 32)
-          return;
-        $("#endTurnButton").off("click");
-        $("#endTurnButton").off("keyup");
-        $(".cover, .coverContainer").css("display", "none");
-        turnEnd();
-      });
+  async function prepTurnEnd() {
+    // TODO: remove the "You " checks.
+    // $(".coverContainerContents").css("background-color", "#fff");
+    // $(".cover").css("background-color", "#000");
+    // $(".coverContainer h2").css("color", "#000");
+    // $(".coverContainer h4").css("color", "#333");
+    // $(".coverContainerContents").html("" +
+    //   "<ul>" +
+    //   "<li><h2><span class='name" + clientNum + "'>" + clientName + "</span>, are you ready to finish your turn?</h2></li>" +
+    //   "<li><button id='endTurnButton' class='bigButton'>Sure</button></li>" +
+    //   "</ul>" +
+    //   "");
+    // $("#endTurnButton").css("font-size", spaceWidth + "px");
+    // $(".cover, .coverContainer").css("display", "block");
+    // $("#endTurnButton").focus();
+    // $("#endTurnButton").on("keyup", function () {
+    //   if (event.which != 32)
+    //     return;
+    //   $("#endTurnButton").off("click");
+    //   $("#endTurnButton").off("keyup");
+    //   $(".cover, .coverContainer").css("display", "none");
+    //   turnEnd();
+    // });
 
-      $("#endTurnButton").on("click", function () {
-        $("#endTurnButton").off("click");
-        $("#endTurnButton").off("keyup");
-        $(".cover, .coverContainer").css("display", "none");
-        turnEnd();
-      });
-    }, 2000);
+    // $("#endTurnButton").on("click", function () {
+    //   $("#endTurnButton").off("click");
+    //   $("#endTurnButton").off("keyup");
+    //   $(".cover, .coverContainer").css("display", "none");
+    //   turnEnd();
+    // });
+    await fetchPlayerInput(clientId, 'readyup')
+    turnEnd()
   }
 
   function turnEnd() {
     var result = winning();
     if (result === false) {
-      var alive = false;
+      var someAlive = false;
       for (var i = 0; i < board.players.length; i++) {
         $("#playerTokens" + i).html(board.players[i].tokens);
         if (!board.players[i].dead)
-          alive = true;
+          someAlive = true;
       }
-      if (!alive && unleashed) {
+      if (!someAlive && unleashed) {
         sendBoardViewMessage("allDead~");
-      } else
-        sendBoardViewMessage("yourTurn~" + (clientNum + 1) % board.players.length + "~");
+      } else {
+        // TODO: sync up the board players and the playerData array to be safe
+        // against disconnections.
+        const clientNums = playerData.map(p => p.playerNum)
+        let nextClientNum = Math.min(...clientNums.filter(n => n > clientNum))
+        if (nextClientNum === Infinity) {
+          nextClientNum = Math.min(...clientNums)
+        }
+        sendBoardViewMessage("yourTurn~" + nextClientNum + "~");
+      }
     } else {
       sendBoardViewMessage("winner~" + result + "~");
     }
   }
 
   function displayWinner(num) {
-    $(".coverContainerContents").css("background-color", "#000");
-    $(".coverContainerContents").css("color", "#fff");
-    $(".coverContainerContents h1").css("color", "#fff");
-    $(".coverContainerContents h2").css("color", "#fff");
-    $(".coverContainerContents h3").css("color", "#fff");
-    $(".coverContainerContents").html("" +
-      "<ul>" +
-      "<li><h1><span class='name" + num + "'>" + board.players[num].name + "</span></h1></li>" +
-      "<li><h2>IS THE WINNER</h2></li>" +
-      "<li><h3>POOP TO THE REST OF YOU</h3></li>" +
-      "</ul>" +
-      "");
-    $(".cover, .coverContainer").css("display", "block");
+    // $(".coverContainerContents").css("background-color", "#000");
+    // $(".coverContainerContents").css("color", "#fff");
+    // $(".coverContainerContents h1").css("color", "#fff");
+    // $(".coverContainerContents h2").css("color", "#fff");
+    // $(".coverContainerContents h3").css("color", "#fff");
+    // $(".coverContainerContents").html("" +
+    //   "<ul>" +
+    //   "<li><h1><span class='name" + num + "'>" + board.players[num].name + "</span></h1></li>" +
+    //   "<li><h2>IS THE WINNER</h2></li>" +
+    //   "<li><h3>POOP TO THE REST OF YOU</h3></li>" +
+    //   "</ul>" +
+    //   "");
+    // $(".cover, .coverContainer").css("display", "block");
+    $('show-winner').get(0).open(playerData.find(p => p.playerNum = num).name, board.players.reduce((ac, p) => ({ ...ac, [p.name]: p.tokens }), {}))
   }
 
   function winning() {
@@ -1128,15 +1085,13 @@ function Game(context, logHolder, tokenTracker) {
 
       function drawMoveInit(roll) {
         if (roll == 0) {
-          if (clientNum == 0)
-            that.react();
+          that.react();
           return;
         }
 
         for (var i = 0; i < board.players.length; i++)
           if (!board.players[i].dead && that.space.id == board.players[i].space.id) {
-            if (clientNum == 0)
-              that.react();
+            that.react();
             return;
           }
 
@@ -1250,78 +1205,99 @@ function Game(context, logHolder, tokenTracker) {
       $(".cover, .coverContainer").css("display", "block");
     };
 
-    const onMessage = (type, data) => {
+    const onMessage = async (type, data) => {
       switch(type) {
         case 'boardview':
           oldOnMessage(data.message)
           break;
 
         case 'playerInput':
-
+          receivedPlayerInput(data);
           break;
 
-        case 'players':
+        case 'playerData':
+          playerData = data;
+          if (!started) {
+            $('boardview-players').get(0).open(playerData)
+          }
+          break;
 
+        case 'playerLeft':
+          const leftClientId = data
+          const gonePlayer = playerData.find(({ id }) => id === leftClientId)
+          if (gonePlayer) gonePlayers.push(gonePlayer)
+          playerData = playerData.filter(({ id }) => id !== leftClientId)
+          if (!started) {
+            $('boardview-players').get(0).open(playerData)
+          }
+          console.log({ gonePlayers })
+          break;
+
+        case 'playerReturned':
+          const returnedClientId = data
+          playerData.push(gonePlayers.find(({ id }) => id === returnedClientId))
+          playerData = playerData.sort(({ playerNum: a }, { playerNum: b }) => a - b)
+          if (!started) {
+            $('boardview-players').get(0).open(playerData)
+          }
+          break;
+
+        case "greenCard":
+          const card = data
+          const greenCardEl = $('green-card').get(0)
+          greenCardEl.open(card)
+
+          const { answer, correctAnswer } = await fetchPlayerInput(clientId, 'greenCard')
+          greenCardEl.open(card, answer, correctAnswer)
+
+          await fetchPlayerInput(clientId, 'readyup');
+          greenCardEl.close()
+          turnEnd();
+          break;
+
+        case 'redCard':
+          const prompt = data.prompt;
+          const redCardEl = $('red-card').get(0)
+          redCardEl.open(prompt, `${clientName} will tell a TRUTH or a LIE`)
+
+          const { reactions } = await fetchPlayerInput(clientId, 'redCardReactions')
+          redCardEl.open(prompt, `Everyone has responded, ${clientName}, were you TRUTHING or LYING?`);
+
+          const { result } = await fetchPlayerInput(clientId, 'redCard')
+          const otherPlayers = playerData.filter(p => p.id !== clientId)
+          const { LYING: liars = [], TRUTHING: truthers = [] } = Object.groupBy(otherPlayers, p => reactions[p.id])
+          if (result === 'LYING') {
+            const lieSuccess = liars.length === 0
+            if (lieSuccess) {
+              sendBoardViewMessage("getTokens~" + clientNum + "~" + lieSuccessTokens + "~");
+            }
+
+            truthers.forEach(p => sendBoardViewMessage("loseTokens~" + p.playerNum + "~1~"));
+            liars.forEach(p => sendBoardViewMessage("getTokens~" + p.playerNum + "~1~"));
+
+            redCardEl.open(prompt, `${clientName} was ${lieSuccess ? '' : 'un'}successfully`, result);
+          } else {
+            sendBoardViewMessage("getTokens~" + clientNum + "~" + truthSuccessTokens + "~");
+
+            truthers.forEach(p => sendBoardViewMessage("getTokens~" + p.playerNum + "~1~"));
+            liars.forEach(p => sendBoardViewMessage("loseTokens~" + p.playerNum + "~1~"));
+
+            redCardEl.open(prompt, `${clientName} was`, result);
+          }
+
+          await fetchPlayerInput(clientId, 'readyup');
+          redCardEl.close()
+          turnEnd();
           break;
       }
     }
 
     const oldOnMessage = function (message) {
-      console.log(message.data);
-      if (message.data.indexOf("~") == -1)
+      console.log(message);
+      if (message.indexOf("~") == -1)
         return;
-      var args = message.data.split("~");
+      var args = message.split("~");
       switch (args[0]) {
-        // at the beginning each person gets all the info about all the other players
-        case "otherNewPlayers":
-          var num = board.players.length;
-          var nameNum;
-          for (var i = 1; i < args.length - 1; i++) {
-            if (args[i] != "") {
-              nameNum = args[i].split('|');
-              board.makeNewPlayer(nameNum[1], nameNum[0].replace(/[^a-zA-Z ]/g, ""));
-              num++;
-            }
-          }
-          if (clientNum == undefined) {
-            if (board.players.filter(p => p.num == 0).length) {
-              clientNum = num;
-            } else {
-              clientNum = 0;
-            }
-
-            board.makeNewPlayer(clientNum, clientName);
-          }
-          break;
-
-          // tells you that the game is starting
-        case "start":
-          if (!started) {
-            started = true;
-            board.drawBoard();
-            if (clientNum == 0)
-              turnStart();
-          }
-          break;
-
-        case "ready":
-          board.players[args[1]].ready = true;
-          for (var i = 0; i < board.players.length; i++) {
-            if (!board.players[i].ready)
-              return;
-          }
-          var htmlStr = "<table><thead><tr>";
-          for (var i = 0; i < board.players.length; i++) {
-            htmlStr += "<th><span class='name" + i + "'>" + board.players[i].name + "</span></th>";
-          }
-          htmlStr += "</tr></thead><tbody><tr>";
-          for (var i = 0; i < board.players.length; i++) {
-            htmlStr += "<td id='playerTokens" + i + "'>0</td>";
-          }
-          htmlStr += "</tr></tbody></table>";
-          $(tokenTracker).html(htmlStr);
-          sendBoardViewMessage("start~");
-          break;
 
         case "died":
           board.players[args[1]].dead = true;
@@ -1391,26 +1367,15 @@ function Game(context, logHolder, tokenTracker) {
 
             if (stage != -1)
               setTimeout(diedAnimation, 20, stage, num);
-            else if (clientNum == 0)
-              sendBoardViewMessage("yourTurn~" + (1 * args[2]) + "~");
+            else
+              // sendBoardViewMessage("yourTurn~" + (1 * args[2]) + "~");
+              turnEnd()
           }
           diedAnimation(1, 1);
           break;
 
         case "allDead":
-          $(".coverContainerContents").css("background-color", "#000");
-          $(".coverContainerContents").css("color", "#fff");
-          $(".coverContainerContents h1").css("color", "#fff");
-          $(".coverContainerContents h2").css("color", "#fff");
-          $(".coverContainerContents h3").css("color", "#fff");
-          $(".coverContainerContents").html("" +
-            "<ul>" +
-            "<li><h1>CARPATHIA WINS</h1></li>" +
-            "<li><h2>HE ATE YOUR SOULS</h2></li>" +
-            "<li><h3>YOU ALL SUCK</h3></li>" +
-            "</ul>" +
-            "");
-          $(".cover, .coverContainer").css("display", "block");
+          $('all-dead').get(0).open()
           break;
 
         case "alived":
@@ -1420,6 +1385,7 @@ function Game(context, logHolder, tokenTracker) {
 
           // tells you that its your turn now
         case "yourTurn":
+          setClientNum(args[1])
           board.drawBoard();
           if (unleashed && args[1] == 0 && !carpathia.turning) {
             addToLogger("The turn of Carpathia has commenced! Tremble!");
@@ -1451,7 +1417,7 @@ function Game(context, logHolder, tokenTracker) {
               if ((chance && board.players[clientNum].tokens + 5 > 0) || (!chance && board.players[clientNum].tokens - 2 > 0)) {
                 // board.players.dead = false;
                 sendBoardViewMessage("alived~" + clientNum + "~");
-                sendBoardViewMessage("broadcast~The tokens that " + clientName + " had received allowed them to buy their way becak to life!");
+                sendBoardViewMessage("broadcast~The tokens that " + clientName + " had received allowed them to buy their way back to life!");
               }
 
               prepTurnEnd();
@@ -1521,34 +1487,6 @@ function Game(context, logHolder, tokenTracker) {
           carpathia.move(1 * args[1]);
           break;
 
-        case "greenCard":
-          if (args[1] == clientNum) {
-            $(".cover, .coverContainer").css("display", "block");
-            $(".coverContainerContents").css("background-color", "#0d0");
-            $(".cover").css("background-color", "#777");
-            $(".coverContainerContents").html("" +
-              "<ul>" +
-              "<li><h2>GREEN CARD</h2></li>" +
-              "<li><h4>Answer the trivia question:</h4></li>" +
-              "<li>" + args[2] + "</li>" +
-              "<li><label><input type='radio' name='greenCardAnswer' id='answer0' value='1' />" + args[3] + "</label></li>" +
-              "<li><label><input type='radio' name='greenCardAnswer' id='answer1' value='2' />" + args[4] + "</label></li>" +
-              "<li><label><input type='radio' name='greenCardAnswer' id='answer2' value='3' />" + args[5] + "</label></li>" +
-              "<li><label><input type='radio' name='greenCardAnswer' id='answer3' value='4' />" + args[6] + "</label></li>" +
-              "<li><button id='greenCardSubmit' class='bigButton'>Submit</button></li>" +
-              "</ul>" +
-              "");
-            $(".coverContainer h2").css("color", "#fff");
-            $(".coverContainer h4").css("color", "#fff");
-            $("#greenCardSubmit").on("click", function () {
-              sendBoardViewMessage("greenCardAnswer~" + $("input[name='greenCardAnswer']:checked").val() + "~" + clientNum + "~" + clientName + "~");
-              $(".cover, .coverContainer").css("display", "none");
-              // turnEnd();
-            });
-          } else {
-            addToLogger(board.players[args[1]].name + " is answering a green card.");
-          }
-          break;
 
         case "greenCardShow":
           if (clientNum == args[1])
@@ -1685,13 +1623,13 @@ function Game(context, logHolder, tokenTracker) {
 
           // an action of another player has caused someone to get tokens, maybe you
         case "getTokens":
-          addToLogger((clientNum == args[1] ? "You" : board.players[args[1]].name) + " got <span class='bigArrow'>↑</span>" + args[2] + "<span class='bigArrow'>↑</span> token" + (1 * args[2] != 1 ? "s" : "") + ".");
+          addToLogger(board.players[args[1]].name + " got <span class='bigArrow'>↑</span>" + args[2] + "<span class='bigArrow'>↑</span> token" + (1 * args[2] != 1 ? "s" : "") + ".");
           board.players[args[1]].tokens += parseInt(args[2]);
           $("#playerTokens" + args[1]).html(board.players[args[1]].tokens);
           break;
 
         case "loseTokens":
-          addToLogger((clientNum == args[1] ? "You" : board.players[args[1]].name) + " lost <span class='bigArrow'>↓</span>" + args[2] + "<span class='bigArrow'>↓</span> token" + (1 * args[2] != 1 ? "s" : "") + ".");
+          addToLogger(board.players[args[1]].name + " lost <span class='bigArrow'>↓</span>" + args[2] + "<span class='bigArrow'>↓</span> token" + (1 * args[2] != 1 ? "s" : "") + ".");
           board.players[args[1]].tokens -= parseInt(args[2]);
           $("#playerTokens" + args[1]).html(board.players[args[1]].tokens);
           // if(board.players[args[1]].tokens < 0 && clientNum == 0)
@@ -1699,19 +1637,11 @@ function Game(context, logHolder, tokenTracker) {
           break;
 
         case "rolled":
-          if (args[2] * 1 == clientNum)
-            str = "You";
-          else
-            str = board.players[args[2]].name;
-          addToLogger(str + " rolled a " + args[1] + ".");
+          addToLogger(board.players[args[2]].name + " rolled a " + args[1] + ".");
           board.players[args[2]].move(args[1]);
           break;
 
         case "reaction":
-          if (args[1] == clientName)
-            str = "You";
-          else
-            str = args[1];
           addToLogger(args[1] + " landed on a " + args[2] + " space.");
           break;
 
@@ -1733,17 +1663,62 @@ function Game(context, logHolder, tokenTracker) {
       }
     };
 
+    Chat.oldOnMessage = oldOnMessage
+
     openConnection(onMessage, onOpen, onReconnect, onError)
   });
 
   Chat.connect();
 
-}
+  const playerDialog = $('boardview-players').get(0)
+  playerDialog.open()
+  playerDialog.addEventListener('start', (e) => {
+    sendMessage('start')
 
-$('boardview-players').get(0).open()
+    playerData.forEach(player => {
+      board.makeNewPlayer(player)
+    })
+
+    if (!started) {
+      var htmlStr = "<table><thead><tr>";
+      for (var i = 0; i < board.players.length; i++) {
+        htmlStr += "<th><span class='name" + i + "'>" + board.players[i].name + "</span></th>";
+      }
+      htmlStr += "</tr></thead><tbody><tr>";
+      for (var i = 0; i < board.players.length; i++) {
+        htmlStr += "<td id='playerTokens" + i + "'>0</td>";
+      }
+      htmlStr += "</tr></tbody></table>";
+      $(tokenTracker).html(htmlStr);
+
+      started = true;
+      board.drawBoard();
+      setClientNum(0)
+
+      turnStart();
+    }
+  })
+
+  function sendBoardViewMessage(message) {
+    console.log('sendBoardViewMessage:', message)
+    const [action, ...args] = message.split('~')
+    switch(action) {
+      case 'greenCard':
+        sendMessage(action)
+        break;
+      case 'redCard':
+        sendMessage(action)
+        break;
+      default:
+        Chat.oldOnMessage(message)
+    }
+  }
+}
 
 Game(
   $("#canvas").get(0).getContext("2d"),
   $("#logger").get(0),
   $("#tokenTracker").get(0)
 );
+
+// TODO: Add a confirm beforeunload to guard against the state in this page being lost

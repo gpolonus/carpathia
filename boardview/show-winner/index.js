@@ -2,7 +2,7 @@
 import { LitElement, css, html } from 'lit';
 import { createRef, ref } from 'lit/directives/ref.js';
 
-export default class BoardviewPlayers extends LitElement {
+export default class ShowWinner extends LitElement {
 
   static styles = css`
     dialog {
@@ -37,6 +37,14 @@ export default class BoardviewPlayers extends LitElement {
     dialog.colors div.field {
       padding: 1rem;
     }
+
+    .truthing {
+      color: green;
+    }
+
+    .lying {
+      color: red;
+    }
   `;
 
   static properties = {
@@ -45,42 +53,41 @@ export default class BoardviewPlayers extends LitElement {
     // wrong and not triggering changes for some reason.
     // TODO: Fix this. Probably just need to make this object correct or add
     // a converter or something.
-    players: { hasChanged: () => true }
+    winner: { type: String },
+    tokens: { type: Object },
   };
 
   dialogRef = createRef();
 
   constructor() {
     super()
-
-    this.players = []
   }
 
-  open(players) {
-    this.players = players || []
+  open(winner, tokens) {
+    this.winner = winner
+    this.tokens = tokens;
     this.dialogRef.value.showModal()
   }
 
   close() {
     this.dialogRef.value.close()
-    this.dispatchEvent(new CustomEvent('start', { bubbles: false }))
   }
 
-// TODO: throw an error on click of the start button without any playerData
   render() {
     return html`
       <dialog ${ref(this.dialogRef)} class="modal-body">
-        <h1>Welcome to Carpathia!</h1>
-        <h2>Waiting for players</h2>
-        ${this.players.map(p => html`
-          <h4 class=${p.color}>${p.name}</h4>
-        `)}
-        <div>
-          <button @click=${this.close}>Start</button>
-        </div>
+        <h1>${this.winner} is the winner!</h1>
+        <h2>Token Amounts:</h2>
+        ${
+          this.tokens
+            ? Object.entries(this.tokens).map(([name, amount], i) =>
+              html`<h3><span class="name${i}">${name}</span> : ${amount}</h3>`
+            )
+            : ''
+        }
       </dialog>
     `;
   }
 }
 
-customElements.define('boardview-players', BoardviewPlayers);
+customElements.define('show-winner', ShowWinner);
