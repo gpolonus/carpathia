@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "npx vite dev --port 3002",
 		"build": "./build.sh",
-    "start": "http-server dist --port=3005"
+    "start": "http-server build --port=3005"
 	},
 	"dependencies": {
 		"lit": "^3.3.0"
