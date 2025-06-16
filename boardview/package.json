@@ -1,0 +1,16 @@
+{
+	"name": "carpathia-boardview",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+    "dev": "vite dev --port 3002",
+    "build": "./build.sh"
+	},
+	"dependencies": {
+		"lit": "^3.3.0"
+	},
+	"devDependencies": {
+		"vite": "^6.2.6"
+	}
+}

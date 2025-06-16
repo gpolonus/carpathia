@@ -1,0 +1,22 @@
+{
+	"name": "carpathia-backend",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+    "dev": "nodemon ./sse.js",
+    "start": "node sse.js"
+	},
+	"dependencies": {
+		"body-parser": "^2.2.0",
+		"cors": "^2.8.5",
+		"dotenv": "^16.5.0",
+		"express": "^5.1.0",
+		"multer": "^2.0.0",
+		"random-words": "^2.0.1"
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.4",
+		"svelte": "^5.0.0"
+	}
+}
