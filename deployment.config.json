@@ -6,6 +6,11 @@
       "args": "run backend"
     },
     {
+      "name": "carpathia-boardview",
+      "script": "npm",
+      "args": "run boardview"
+    },
+    {
       "name": "carpathia-clientapp",
       "script": "npm",
       "args": "run clientapp"
