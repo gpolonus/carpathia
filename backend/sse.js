@@ -18,7 +18,7 @@ const serverRouter = express.Router()
   server.use(cors());
 // }
 
-const serverBasePath = process.env.SERVER_BASE_PATH || '/server'
+const serverBasePath = process.env.SERVER_BASE_PATH || '/'
 console.log({ serverBasePath })
 server.use(serverBasePath, serverRouter)
 
