@@ -6,7 +6,7 @@
 	"scripts": {
     "dev": "vite dev --port 3001",
 		"build": "vite build",
-    "start": "npm run clientapp:build && PORT=3004 node build"
+    "start": "npm run build && PORT=3004 node build"
 	},
 	"dependencies": {
 	},

@@ -6,7 +6,7 @@
 	"scripts": {
     "build": "(cd ./client-app && npm run build) && (cd ./boardview && npm run build)",
     "backend": "cd backend && node sse.js",
-    "clientapp": "npm run clientapp:build && cd client-app && PORT=3004 node build"
+    "clientapp": "cd client-app && npm run start"
 	},
 	"dependencies": {},
 	"devDependencies": {}
