@@ -17,6 +17,17 @@ function chose(e) {
 
 </script>
 
-<h2>CHOSE YOUR FATE</h2>
-<ItemSelect exclusive=true items={options} bind:value={selectedOption} />
-<button onclick={chose}>CHOSE</button>
+<style>
+  :global(.penalty .item-select label) {
+    font-size: 4rem;
+    font-family: "Vast Shadow", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+</style>
+
+<div class="penalty">
+  <h2>CHOSE YOUR FATE</h2>
+  <ItemSelect exclusive=true items={options} bind:value={selectedOption} />
+  <button onclick={chose}>CHoOoOoSE</button>
+</div>

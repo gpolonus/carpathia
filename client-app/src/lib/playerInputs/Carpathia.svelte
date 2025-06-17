@@ -17,6 +17,18 @@ function roll(e) {
 
 </script>
 
-<h2>ROLL THE CARPATHIA DICE</h2>
-<ItemSelect exclusive=true items={options} bind:value={selectedDie} />
-<button onclick={roll}>ROLL</button>
+
+<style>
+  :global(.carpathia-dice .item-select label) {
+    font-size: 4rem;
+    font-family: "Vast Shadow", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+</style>
+
+<div class="carpathia-dice">
+  <h2>ROLL THE CARPATHIA DICE</h2>
+  <ItemSelect exclusive=true items={options} bind:value={selectedDie} />
+  <button onclick={roll}>ROLL</button>
+</div>

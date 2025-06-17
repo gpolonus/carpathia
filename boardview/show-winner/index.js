@@ -45,6 +45,13 @@ export default class ShowWinner extends LitElement {
     .lying {
       color: red;
     }
+
+    .token {
+      border: 1px dashed black;
+      border-radius: 2px;
+      background-color: #fc0;
+      color: black;
+    }
   `;
 
   static properties = {
@@ -76,7 +83,7 @@ export default class ShowWinner extends LitElement {
         ${
           this.tokens
             ? Object.entries(this.tokens).map(([name, amount], i) =>
-              html`<h3><span class="name${i}">${name}</span> : ${amount}</h3>`
+              html`<h3><span class="name${i}">${name}</span> : <span class="token">${amount}</span></h3>`
             )
             : ''
         }

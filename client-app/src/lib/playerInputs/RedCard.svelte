@@ -23,10 +23,10 @@ function respond(e) {
 </script>
 
 {#if responding}
-<h2>How is {playerName} responding to the prompt?</h2>
+<h3>How is {playerName} responding to the prompt?</h3>
 {:else}
-<h2>Red Card Prompt:</h2>
+<h3>Red Card Prompt:</h3>
 {/if}
-<h3>{playerInputStore.value.prompt}</h3>
+<h2>{playerInputStore.value.prompt}</h2>
 <ItemSelect exclusive=true items={options} bind:value={selectedAnswer} />
 <button onclick={respond}>{responding ? 'GUESS' : 'REVEAL'}</button>

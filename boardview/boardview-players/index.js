@@ -62,7 +62,7 @@ export default class BoardviewPlayers extends LitElement {
   }
 
   close() {
-    if (!this.players?.length < 2) {
+    if (this.players?.length < 2) {
       alert('Cannot start without enough players')
       return
     }

@@ -13,5 +13,6 @@ function answer(e) {
 }
 </script>
 
+<h2>Answer the Green Card</h2>
 <ItemSelect exclusive=true items={options} bind:value={selectedAnswer} />
 <button onclick={answer}>ANSWER</button>

@@ -3,8 +3,8 @@
   import { alertMessage } from '$lib';
 
   const DEFAULTS = {
-    primary: '#008000',
-    secondary: '#662233',
+    primary: '#cc9425',
+    secondary: '#4A412A',
     text: 'white',
   }
   let primaryColor = localStorage.getItem('primary-color') || DEFAULTS.primary
@@ -49,17 +49,20 @@
   }
 
   :global(h1, h2, h3) {
+    font-family: "Creepster", system-ui;
+    font-weight: 400;
+    font-style: normal;
     margin: 0;
     padding-bottom: 1rem;
     font-weight: 400;
   }
 
   :global(h1) {
-    font-size: 3rem;
+    font-size: 4rem;
   }
 
   :global(h2) {
-    font-size: 2rem;
+    font-size: 3rem;
   }
 
   :global(h3) {
@@ -103,9 +106,9 @@
 
 <div class="body" style={colorStyles}>
   <div class="header">
-    <h2>
-      MERRY CRINGEMAS
-    </h2>
+    <h1>
+      Carpathia Controls
+    </h1>
   </div>
 
   <Alert {...alertMessage.value} />

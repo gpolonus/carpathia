@@ -40,7 +40,7 @@ div
 
 .column2 .row2
 {
-	
+
 }
 
 .cover
@@ -141,6 +141,14 @@ span.rolled
 {
 	color: white;
 	background-color: black;
+}
+
+span.black {
+  color: black;
+}
+
+span.white {
+  color: white;
 }
 
 div#logger p:first-child

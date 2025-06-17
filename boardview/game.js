@@ -1,5 +1,5 @@
 
-import { openConnection, sendMessage, sendBoardViewMessage } from './frontend-sse.js'
+import { openConnection, sendMessage } from './frontend-sse.js'
 import CanvasLibrary from './utils/canvasLibraryObj.js'
 import UtilityLibrary from './utils/utilityLibrary.js'
 import { fetchPlayerInput, receivedPlayerInput } from './utils/playerInput.js';
@@ -14,21 +14,16 @@ function Game(context, logHolder, tokenTracker) {
   }, false);
   ctx.canvas.width = window.innerWidth * 0.69;
   ctx.canvas.height = window.innerHeight - 10;
-  // $(ctx.canvas).on("click mousemove", function(){
-  //   ctx.canvas.width = window.innerWidth * 0.69;
-  //   ctx.canvas.height = window.innerHeight - 10;
-  // });
+
   var canLib = new CanvasLibrary(context);
   var utiLib = new UtilityLibrary();
   canLib.blackCanvas();
   var winner = false;
   var board = new Board();
   var carpathia = new Carpathia();
-  // A value of 2 equates to a 1 in 8 chance of rolling a success
-  // var carpathiaChance = 2;
-  var carpathiaChance = 0
-  // var carpathiaDecreaseAmount = 0.25;
-  var carpathiaDecreaseAmount = 0;
+  // How it's set up currently: You have a 1 in `carpathiaChance` of rolling one die successfully.
+  var carpathiaChance = 4;
+  var carpathiaDecreaseAmount = 0.5;
   var spaceWidth;
   var startSpot;
 
@@ -74,7 +69,55 @@ function Game(context, logHolder, tokenTracker) {
     var spacesArray = [];
     this.spacesArray = spacesArray;
     this.players = [];
-    var playerColors = ["#f00", "#0f0", "#00f", "#0ff", "#f0f", "#ff0"];
+    const colorOffset = 0.1
+    var playerColors = [];
+
+    const percentToColor = (p) => {
+      const angle = p * 360
+      let red = 0, green = 0, blue = 0;
+      const ratio = 255/120
+
+      // r -> g
+      if (angle < 120) {
+        green = angle * ratio
+        red = 255 - green
+
+      // g -> b
+      } else if (angle < 240) {
+        blue = (angle - 120) * ratio
+        green = 255 - blue
+
+      // b -> r
+      } else {
+        red = (angle - 240) * ratio
+        blue = 255 - red
+      }
+
+      // for each c in r,g,b:
+      //   c = c / 255.0
+      //   if c <= 0.04045 then c = c/12.92 else c = ((c+0.055)/1.055) ^ 2.4
+      // L = 0.2126 * r + 0.7152 * g + 0.0722 * b
+      function getC(c) {
+        c = c / 255
+        return c <= 0.04045
+          ? c / 12.92
+          : ((c + 0.055) / 1.055) ** 2.4
+      }
+
+      const L = 0.2126 * getC(red) + 0.7152 * getC(green) + 0.0722 * getC(blue)
+
+      return {
+        color: `rgb(${red} ${green} ${blue})`,
+        text: L > 0.179 ? 'black' : 'white'
+      }
+    }
+
+    const makePlayerColors = (playerCount) => {
+      return Array(playerCount).fill().map((_, i) => {
+        return percentToColor((i / playerCount + colorOffset) % 1)
+      })
+    }
+
     var types = [
       "green",
       "red",
@@ -163,9 +206,12 @@ function Game(context, logHolder, tokenTracker) {
     makeBoard();
 
     this.makeNewPlayer = function ({ id, name, playerNum, color }) {
-      if (!color)
-        color = playerColors[playerNum % playerColors.length]
       that.players[playerNum] = new Player(id, playerNum, name.replace(/[^a-zA-Z ]/g, ""), color);
+      const playerColors = makePlayerColors(this.players.length)
+      this.players.forEach((p, i) => {
+        p.color = playerColors[i].color
+        p.textColor = playerColors[i].text
+      })
     }
 
     // get the start space at the specified number
@@ -531,6 +577,7 @@ function Game(context, logHolder, tokenTracker) {
           const { chosen } = await fetchPlayerInput(clientId, 'penalty');
           [0, 1, 2].filter(i => i !== chosen).forEach(i => drawOption(actualities[i].text, i));
           drawChosen(chosen);
+          sendBoardViewMessage(`broadcast~${clientName} chose ${1*chosen + 1}~`);
           actualities[chosen].func()
         },
         "carpathia": function () {
@@ -563,7 +610,7 @@ function Game(context, logHolder, tokenTracker) {
                 notRolling++;
                 if (rollingSuccess[i] == undefined) {
                   // carpathia Percentage
-                  if (Math.round(Math.random() * carpathiaChance) == 0)
+                  if (Math.floor(Math.random() * carpathiaChance) === 0)
                   // if(Math.round(Math.random()*0) == 0)
                   {
                     rollingSuccess[i] = true;
@@ -718,10 +765,7 @@ function Game(context, logHolder, tokenTracker) {
           ctx.globalAlpha = ga;
           setTimeout(showDiceNumber, 100, (num + 1) % 6);
         } else {
-          const realRollNum = (nextRollValue === -1 ? num : (nextRollValue + 1));
-          // const realRollNum = nextRollValue === -1 ? num : nextRollValue;
-          sendBoardViewMessage("rolled~" + (realRollNum) + "~" + clientNum + "~");
-          nextRollValue = -1;
+          sendBoardViewMessage("rolled~" + (num) + "~" + clientNum + "~");
         }
       }
 
@@ -953,11 +997,13 @@ function Game(context, logHolder, tokenTracker) {
       str = str.replace(new RegExp(text, "g"), "<span class='" + clas + "'>" + text + "</span>");
     }
 
-    for (var i = 0; i < board.players.length; i++)
-      if (board.players[i].dead)
-        str = str.replace(new RegExp(board.players[i].name, "g"), "<span class='name" + i + "'>💀" + board.players[i].name + "💀</span>");
+    for (var i = 0; i < board.players.length; i++) {
+      const { dead, name, color, textColor } = board.players[i]
+      if (dead)
+        str = str.replace(new RegExp(name, "g"), `<span class="${textColor}" style='background-color:${color}'>💀${name}💀</span>`);
       else
-        str = str.replace(new RegExp(board.players[i].name, "g"), "<span class='name" + i + "'>" + board.players[i].name + "</span>");
+        str = str.replace(new RegExp(name, "g"), `<span class="${textColor}" style='background-color:${color}'>${name}</span>`);
+    }
     updateStr("You", "name" + clientNum);
     updateStr("rolled", "rolled");
     updateStr("token", "token");
@@ -1676,7 +1722,8 @@ function Game(context, logHolder, tokenTracker) {
     if (!started) {
       var htmlStr = "<table><thead><tr>";
       for (var i = 0; i < board.players.length; i++) {
-        htmlStr += "<th><span class='name" + i + "'>" + board.players[i].name + "</span></th>";
+        const {name, color, textColor } = board.players[i]
+        htmlStr += `<th><span class="${textColor}" style='background-color:${color}'>${name}</span></th>`;
       }
       htmlStr += "</tr></thead><tbody><tr>";
       for (var i = 0; i < board.players.length; i++) {

@@ -51,10 +51,11 @@ function selectItem(e, item) {
     transform: translate(4px, 4px);
     background-color: var(--secondary);
     box-shadow: unset;
+    color: white;
   }
 </style>
 
-<div class='item-select'>
+<div class='item-select' style="--text-color:black">
   {#each items as item}
   <div class='item'>
     <input type="checkbox" id={item} on:change={(e) => selectItem(e, item)} checked={value.includes(item)} />

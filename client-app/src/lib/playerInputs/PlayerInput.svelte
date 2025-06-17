@@ -35,7 +35,7 @@
     <Carpathia />
   {:else if playerInputStore.value?.type === 'penalty'}
     <Penalty />
-  {:else if playerInputStore.value?.type === 'something else'}
-
+  {:else}
+    <h2>Waiting for turn</h2>
   {/if}
 </div>
