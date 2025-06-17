@@ -96,6 +96,14 @@ export class GameApp extends AppBase {
     this.boardViewClient = 0;
   }
 
+  boardViewSend(...args) {
+    if (this.boardViewClient) {
+      this.boardViewClient.send(...args)
+    } else {
+      console.log('THE BOARDVIEW DISCONNECTED FOR SOME REASON')
+    }
+  }
+
   onClientOpen(client, params) {
     if (params?.type === 'boardview') {
       this.boardViewClient = client;
@@ -109,14 +117,14 @@ export class GameApp extends AppBase {
     this.onClientOpen(client, params)
 
     if (client.id === this.boardViewClient.id) {
-      this.boardViewClient.send(
+      this.boardViewSend(
         'playerData',
         this.players.map(
           ({ name, id }, i) => ({ name, id, playerNum: i })
         )
       )
     } else {
-      this.boardViewClient.send(
+      this.boardViewSend(
         'playerReturned',
         client.id
       )
@@ -128,14 +136,17 @@ export class GameApp extends AppBase {
     // this is very dependent on the data being stored on the client
     // Actually, don't need to do this bc the FE can just hold onto it's own
     // stuff. The BE will just broker the client IDs being consistent.
-    // TODO: remove the boardview client if need be
 
-    this.players = this.players.filter(c => c.id !== client.id)
+    if (client === this.boardViewClient) {
+      this.boardViewClient = 0
+    } else {
+      this.players = this.players.filter(c => c.id !== client.id)
 
-    this.boardViewClient.send(
-      'playerLeft',
-      client.id
-    )
+      this.boardViewSend(
+        'playerLeft',
+        client.id
+      )
+    }
   }
 
   onMessage(client, action, params) {
@@ -147,7 +158,7 @@ export class GameApp extends AppBase {
         client.name = params.name
         client.color = params.color
         // TODO: send additional player data
-        this.boardViewClient.send(
+        this.boardViewSend(
           'playerData',
           this.players.map(
             ({ name, id, color }, i) => ({ name, id, color, playerNum: i })
@@ -203,12 +214,12 @@ export class GameApp extends AppBase {
             break;
         }
 
-        this.boardViewClient.send(action, params);
+        this.boardViewSend(action, params);
         break;
 
       case 'greenCard':
         this.greenCard = greenCard.getCard()
-        this.boardViewClient.send('greenCard', {
+        this.boardViewSend('greenCard', {
           options: this.greenCard.options,
           question: this.greenCard.question
         })
@@ -216,7 +227,7 @@ export class GameApp extends AppBase {
 
       case 'redCard':
         this.redCard = redCard.getCard()
-        this.boardViewClient.send('redCard', {
+        this.boardViewSend('redCard', {
           prompt: this.redCard
         })
         break;

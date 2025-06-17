@@ -31,7 +31,6 @@ function Game(context, logHolder, tokenTracker) {
   var carpathiaDecreaseAmount = 0;
   var spaceWidth;
   var startSpot;
-  let startOffset = 2;
 
   let clientName, clientNum, clientId;
   function setClientNum(num) {
@@ -171,8 +170,7 @@ function Game(context, logHolder, tokenTracker) {
 
     // get the start space at the specified number
     this.getStart = function (num) {
-      // TODO: take away the +1, that's there for testing purposes
-      return spacesArray[Math.round(this.sideNum * 2 / 3 * num) + startOffset][0];
+      return spacesArray[Math.round(this.sideNum * 2 / 3 * num)][0];
     }
 
     function drawCarpathiaDieOnce(place, isThisADie, hovering, failure) {
@@ -399,7 +397,6 @@ function Game(context, logHolder, tokenTracker) {
         "start": function () {
           addToLogger("Roll again!");
           // sendMessage("broadcast~" + board.players[clientNum].name + " landed on a start space and is rolling again.");
-          alert("YOU ARE GREAT");
           sendBoardViewMessage("broadcast~" + "NEVER HAVE I EVER" + "~");
           board.players[clientNum].roll();
           // prepTurnEnd();
@@ -488,6 +485,7 @@ function Game(context, logHolder, tokenTracker) {
             //     prepTurnEnd();
             //   }
             // },
+            // TODO: Add more of these
             {
               text: "You got 10 tokens!",
               func: function () {
@@ -712,10 +710,6 @@ function Game(context, logHolder, tokenTracker) {
         y: ctx.canvas.height / 2 - spaceWidth * 1.5 + spaceWidth * 0.2
       };
 
-      // TODO: get rid of this when deploying to prod
-      let testingRollNumber = 1;
-      window.setRollNumber = (n) => testingRollNumber = n;
-
       function showDiceNumber(num) {
         if (rolling) {
           var ga = ctx.globalAlpha;
@@ -724,7 +718,7 @@ function Game(context, logHolder, tokenTracker) {
           ctx.globalAlpha = ga;
           setTimeout(showDiceNumber, 100, (num + 1) % 6);
         } else {
-          const realRollNum = testingRollNumber || (nextRollValue === -1 ? num : (nextRollValue + 1));
+          const realRollNum = (nextRollValue === -1 ? num : (nextRollValue + 1));
           // const realRollNum = nextRollValue === -1 ? num : nextRollValue;
           sendBoardViewMessage("rolled~" + (realRollNum) + "~" + clientNum + "~");
           nextRollValue = -1;
@@ -871,7 +865,6 @@ function Game(context, logHolder, tokenTracker) {
   }
 
   async function prepTurnEnd() {
-    // TODO: remove the "You " checks.
     // $(".coverContainerContents").css("background-color", "#fff");
     // $(".cover").css("background-color", "#000");
     // $(".coverContainer h2").css("color", "#000");
@@ -1670,6 +1663,7 @@ function Game(context, logHolder, tokenTracker) {
 
   Chat.connect();
 
+  // TODO LATER: Stop the dialogs from closing on ESC
   const playerDialog = $('boardview-players').get(0)
   playerDialog.open()
   playerDialog.addEventListener('start', (e) => {
@@ -1721,4 +1715,8 @@ Game(
   $("#tokenTracker").get(0)
 );
 
-// TODO: Add a confirm beforeunload to guard against the state in this page being lost
+window.onbeforeunload = function(e) {
+  e.preventDefault();
+  e.stopPropogation();
+  alert('Are you sure you want to close? The answer is probably no')
+}

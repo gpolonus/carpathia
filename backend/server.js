@@ -163,7 +163,6 @@ const tellMe = (playerNum, msg) => connections.find(c => c.id === playerNum).cli
 
 const server = http.createServer();
 
-// TODO: Make this SSE based instead of websockets
 const ws = new WebsocketServer({ server });
 ws.on('connection', onStart);
 

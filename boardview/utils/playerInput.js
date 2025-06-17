@@ -1,6 +1,7 @@
 
-// TODO: Add the ability for other players to chime in with input even when it's not asked for
+// TODO LATER: Add the ability for other players to chime in with input even when it's not asked for
 // The above might be accomplishable without changing this
+// TODO LATER: make this more implicit by putting it in the frontend SSE layer
 
 import { sendMessage } from "../frontend-sse";
 

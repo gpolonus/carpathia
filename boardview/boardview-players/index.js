@@ -43,7 +43,7 @@ export default class BoardviewPlayers extends LitElement {
     // players: {  },
     // This is a drunk patch bc the oldValue in the Lit internals keeps being
     // wrong and not triggering changes for some reason.
-    // TODO: Fix this. Probably just need to make this object correct or add
+    // TODO LATER: Fix this. Probably just need to make this object correct or add
     // a converter or something.
     players: { hasChanged: () => true }
   };
@@ -62,11 +62,15 @@ export default class BoardviewPlayers extends LitElement {
   }
 
   close() {
+    if (!this.players?.length < 2) {
+      alert('Cannot start without enough players')
+      return
+    }
+
     this.dialogRef.value.close()
     this.dispatchEvent(new CustomEvent('start', { bubbles: false }))
   }
 
-// TODO: throw an error on click of the start button without any playerData
   render() {
     return html`
       <dialog ${ref(this.dialogRef)} class="modal-body">

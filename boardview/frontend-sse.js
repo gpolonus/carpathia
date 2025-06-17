@@ -2,14 +2,13 @@
 let clientId;
 let disconnected = false;
 
-// TODO: Fix this to not use the process
 export const url = import.meta.env.VITE_SERVER_PATH
 
 export const openConnection = (handleMessage, onOpen, onReconnect, onError, fetchState) => {
   clientId = localStorage.getItem('clientId')
   const clientIdParam = clientId ? `&clientId=${clientId}` : '';
 
-  // TODO: Abstract the type out of here. Could put it in the onOpen
+  // TODO LATER: Abstract the type out of here. Could put it in the onOpen
   const source = new EventSource(`${url}/connect?type=boardview${clientIdParam}`);
 
   source.addEventListener("open", (e) => {
@@ -30,7 +29,6 @@ export const openConnection = (handleMessage, onOpen, onReconnect, onError, fetc
     if (type === 'clientId') {
       console.log('Setting clientId:', data.clientId)
       clientId = data.clientId
-      // TODO: Clear out the clientId when the game is over
       localStorage.setItem('clientId', clientId)
     } else {
       handleMessage(type, data)

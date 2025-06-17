@@ -48,11 +48,6 @@ export default class RedCard extends LitElement {
   `;
 
   static properties = {
-    // players: {  },
-    // This is a drunk patch bc the oldValue in the Lit internals keeps being
-    // wrong and not triggering changes for some reason.
-    // TODO: Fix this. Probably just need to make this object correct or add
-    // a converter or something.
     prompt: { type: String },
     message: { type: String },
     result: { type: String }

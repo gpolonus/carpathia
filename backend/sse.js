@@ -98,10 +98,18 @@ setInterval(() => {
 } , 2 * 60 * 1000)
 
 serverRouter.get('/message', (req, res) => {
-  // TODO: get angry without id and action query params
   const params = { ...req.query }
   const clientId = params.id
   const action = params.action
+
+  if (!clientId) {
+    res.status(400).send('Request is missing the `id` parameter')
+    return
+  } else if (!action) {
+    res.status(400).send('Request is missing the `action` parameter')
+    return
+  }
+
   const responseInstruction = app.clientMessage(clientId, action, params)
 
   if (typeof responseInstruction === 'array') {

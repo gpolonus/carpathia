@@ -48,11 +48,6 @@ export default class GreenCard extends LitElement {
   `;
 
   static properties = {
-    // players: {  },
-    // This is a drunk patch bc the oldValue in the Lit internals keeps being
-    // wrong and not triggering changes for some reason.
-    // TODO: Fix this. Probably just need to make this object correct or add
-    // a converter or something.
     card: { type: Object },
     answer: { type: String },
     correctAnswer: { type: String }

@@ -11,7 +11,7 @@ const allStores = [];
 
 export function resumableStore(initialValue) {
   const storeIndex = allStores.length
-  // TODO: Make sure these are cleared out when the game is over
+  // TODO LATER: Make sure these are cleared out when the game is over
   const oldValue = localStorage.getItem(`store-${storeIndex}`)
   initialValue = oldValue !== null ? JSON.parse(oldValue) : initialValue
   const store = $state({ value: initialValue });

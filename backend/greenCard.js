@@ -19,20 +19,22 @@ export default {
     // card.options = card.options.map((_, i) => card.options[randomMapping[i]]);
     // card.answer = randomMapping[card.answer];
     card.answerValue = card.options[card.answer - 1];
+    card.options = randomizeItems(card.options)
     return card;
   }
 }
 
-const randomizeNumbers = num => {
-  const array = Array(num).fill().map((_, i) => i);
-  const randomizeArray = (values, ac = []) => {
-    if(values.length === 0) return ac;
-    const randIndex = Math.round(Math.random() * (values.length - 1));
-    const [value] = values.splice(randIndex, 1);
-    return randomizeArray(values, [...ac, value]);
-  };
+const randomizeItems = items => {
+  // const randomizeArray = (values, ac = []) => {
+  //   if(values.length === 0) return ac;
+  //   const randIndex = Math.round(Math.random() * (values.length - 1));
+  //   const [value] = values.splice(randIndex, 1);
+  //   return randomizeArray(values, [...ac, value]);
+  // };
 
-  return randomizeArray(array);
+  // return randomizeArray(items);
+  const nums = [...items]
+  return items.map(i => nums.splice(Math.round(Math.random() * (nums.length - 1)), 1)[0])
 }
 
 // public class GreenCard

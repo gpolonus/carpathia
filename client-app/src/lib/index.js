@@ -42,8 +42,6 @@ const onReconnect = (e) => {
     'Resume',
     () => {
       setTimeout(async () => {
-        // TODO: Reset the client state, whatever that means
-        // selectCharacter(chosenCharacters)
         ds.sendMessage('setName', { name: playerName.value });
         clearModal()
       })
@@ -55,7 +53,7 @@ const onReconnect = (e) => {
 
 // Best thing to do in the onError is to wait for the connection to reopen. If
 // it doesn't, that means something is wrong with the server.
-// TODO: if the thing tries to reconnect too many times, tell the user that
+// TODO LATER: if the thing tries to reconnect too many times, tell the user that
 // the server is down.
 const onError = (e) => {
   openModal(
@@ -68,7 +66,6 @@ const onError = (e) => {
       // Calling `connect` here will open a whole nother connection when the
       // original one is trying to stay alive, thus creating more than one
       // connection per tab.
-      // TODO: All that's needed is to resend what character this client is, once the client is connected again.
       location.reload();
       clearModal();
     }
