@@ -22,7 +22,7 @@ function Game(context, logHolder, tokenTracker) {
   var board = new Board();
   var carpathia = new Carpathia();
   // How it's set up currently: You have a 1 in `carpathiaChance` of rolling one die successfully.
-  var carpathiaChance = 5;
+  var carpathiaChance = 6;
   var carpathiaDecreaseAmount = 0.5;
   var spaceWidth;
   var startSpot;

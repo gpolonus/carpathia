@@ -7,6 +7,11 @@ import { generate } from 'random-words';
 import multer from 'multer'
 import app from './app-logic.js'
 
+import * as csv from 'fast-csv'
+import { Readable } from 'stream';
+import redCard from './redCard.js';
+import greenCard from './greenCard.js';
+
 // IDEA: Write some kind of composable wrapping piece around Express that
 // allows for this functionality and SSE to exist side by side.
 const upload = multer()
@@ -129,6 +134,34 @@ serverRouter.get('/message', (req, res) => {
   } else {
     res.send()
   }
+})
+
+serverRouter.post('/questions', bodyParser.text(), (req, res) => {
+  const newGreenCards = [];
+  const newRedCards = [];
+  Readable.from(req.body)
+    .pipe(csv.parse({ headers: true }))
+    .on('data', row => {
+      if (row['Red Question Text'])
+        newRedCards.push(row['Red Question Text'])
+
+      if (row['Green Question Text'])
+        newGreenCards.push({
+          options: [
+            row['Option A'],
+            row['Option B'],
+            row['Option C'],
+            row['Option D']
+          ],
+          question: row['Green Question Text'],
+          answer: {'A': 1, 'B': 2, 'C': 3, 'D': 4}[row['Which of the options above is the correct answer?']]
+        })
+    })
+    .on('end', count => {
+      greenCard.setCards(newGreenCards)
+      redCard.setCards(newRedCards)
+      res.send(`Imported ${count} questions!`)
+    })
 })
 
 //*******

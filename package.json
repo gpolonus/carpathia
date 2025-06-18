@@ -5,9 +5,9 @@
 	"type": "module",
 	"scripts": {
     "build": "(cd ./client-app && npm run build) && (cd ./boardview && npm run build)",
-    "backend": "cd backend && node sse.js",
-    "clientapp": "cd client-app && npm run start",
-    "boardview": "cd boardview && npm run start"
+    "backend": "cd backend && npm i && node sse.js",
+    "clientapp": "cd client-app && npm i && npm run start",
+    "boardview": "cd boardview && npm i && npm run start"
 	},
 	"dependencies": {},
 	"devDependencies": {}

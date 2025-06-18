@@ -27,6 +27,7 @@ This time it's gonna be so good.
 
 ## Ideas
 
+- All of the ideas below are great, but this whole development process will be garbage until I get a much more standardized way of moving data from BE to FE and back. Ensuring connectivity and points of truth are shored up currently, but the next game has to have a better way of holding state. Having it live in the boardview screen is iffy at best. I need user profiles, or some way of holding onto user data and keeping that in sync with everything else, and I need persistent game state. Some kind of room system would fix a wealth of these issues. AND I NEED TO DECIDE WHERE THE GAME LOGIC LIVES. Having it on the FE is ass. Calculating it on the BE and sending it to the FE will help so so so much with resumability.
 - move the canvas images to something more efficient
 - add all the animation smoothing [best practices](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Basic_animations)
   - and better animations in general, the dice one sucks

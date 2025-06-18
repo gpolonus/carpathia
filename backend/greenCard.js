@@ -4,16 +4,17 @@
 // import java.util.ArrayList;
 // import java.util.Random;
 
-import greenCards from './greenCards.json' with { type: "json" };
+import OGgreenCards from './greenCards.json' with { type: "json" };
 
-let greenCardHolder = greenCards
+let realGreenCards = OGgreenCards
+let greenCardHolder = [...realGreenCards]
 
 export default {
   getCard: () => {
-    const cardIndex = Math.round(Math.random() * (greenCards.length - 1))
+    const cardIndex = Math.round(Math.random() * (greenCardHolder.length - 1))
     const card = { ...greenCardHolder.splice(cardIndex, 1)[0] };
     if (greenCardHolder.length === 0) {
-      greenCardHolder = greenCards
+      greenCardHolder = realGreenCards
     }
     // const randomMapping = randomizeNumbers(card.options.length);
     // card.options = card.options.map((_, i) => card.options[randomMapping[i]]);
@@ -21,6 +22,11 @@ export default {
     card.answerValue = card.options[card.answer - 1];
     card.options = randomizeItems(card.options)
     return card;
+  },
+
+  setCards(cards) {
+    realGreenCards = cards
+    greenCardHolder = [...realGreenCards]
   }
 }
 
