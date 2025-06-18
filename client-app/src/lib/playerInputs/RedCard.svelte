@@ -17,6 +17,10 @@ const options = [
 const playerName = $derived(playerInputStore.value?.playerName)
 
 function respond(e) {
+  if (!selectedAnswer) {
+    alert('SELECT A RESPONSE')
+    return
+  }
   sendPlayerInput(responding ? 'redCardReactions' : 'redCard', { result: selectedAnswer });
 }
 

@@ -28,18 +28,26 @@ server.use(bodyParser.urlencoded({extended: false}));
 
 let closers = {};
 
-async function resetState() {
+function resetState() {
+  closers = {}
   app.resetState();
 }
 
 // Initially set the state
-await resetState()
+resetState()
 
 //*******
 //* ENDPOINTS
 //*******
 
-serverRouter.get('/test', (req, res) => console.log('test hit') || res.send('Success!'))
+serverRouter.get('/reset', (req, res) => {
+  if (req.query.password === process.env.ADMIN_PASSWORD) {
+    resetState()
+    res.send('success')
+  } else {
+    res.status(401).send('incorrect password')
+  }
+})
 
 serverRouter.get('/connect', cors(), (req, res) => {
   console.log('hit')
@@ -65,7 +73,7 @@ serverRouter.get('/connect', cors(), (req, res) => {
     clientId = Date.now().toString();
     client = {
       id: clientId,
-      name: generate(2).join(' '), // For logging purposes
+      name: 'Unnamed',
       res,
       send(type, data) {
         console.log(`sent '${this.name}' a ${type} message with data:`, data)

@@ -22,7 +22,7 @@ function Game(context, logHolder, tokenTracker) {
   var board = new Board();
   var carpathia = new Carpathia();
   // How it's set up currently: You have a 1 in `carpathiaChance` of rolling one die successfully.
-  var carpathiaChance = 4;
+  var carpathiaChance = 5;
   var carpathiaDecreaseAmount = 0.5;
   var spaceWidth;
   var startSpot;
@@ -56,6 +56,7 @@ function Game(context, logHolder, tokenTracker) {
   devilFace.src = "images/devil.png";
 
   let lieSuccessTokens = 5;
+  let lieFailureTokens = 2;
   let truthSuccessTokens = 2;
 
   function Board(num) {
@@ -435,7 +436,12 @@ function Game(context, logHolder, tokenTracker) {
           // make this a store place?
           sendBoardViewMessage("broadcast~" + clientName + " landed on a blue space. They get tokens!");
           sendBoardViewMessage("getTokens~" + clientNum + "~" + (Math.round(Math.random() * 5) + 1));
-          prepTurnEnd();
+          if (unleashed) {
+            sendBoardViewMessage("broadcast~Since Carpathia is unleashed, " + board.players[clientNum].name + " is rolling again.");
+            board.players[clientNum].roll();
+          } else {
+            prepTurnEnd();
+          }
         },
         "black": function () {
           prepTurnEnd();
@@ -443,7 +449,7 @@ function Game(context, logHolder, tokenTracker) {
         "start": function () {
           addToLogger("Roll again!");
           // sendMessage("broadcast~" + board.players[clientNum].name + " landed on a start space and is rolling again.");
-          sendBoardViewMessage("broadcast~" + "NEVER HAVE I EVER" + "~");
+          // sendBoardViewMessage("broadcast~" + "NEVER HAVE I EVER" + "~");
           board.players[clientNum].roll();
           // prepTurnEnd();
         },
@@ -765,7 +771,10 @@ function Game(context, logHolder, tokenTracker) {
           ctx.globalAlpha = ga;
           setTimeout(showDiceNumber, 100, (num + 1) % 6);
         } else {
-          sendBoardViewMessage("rolled~" + (num) + "~" + clientNum + "~");
+          ctx.drawImage(diceImages[num], point.x, point.y, spaceWidth * 3, spaceWidth * 3);
+          setTimeout(() => {
+            sendBoardViewMessage("rolled~" + (num + 1) + "~" + clientNum + "~");
+          }, 1.5 * 1000);
         }
       }
 
@@ -1080,7 +1089,7 @@ function Game(context, logHolder, tokenTracker) {
         sendBoardViewMessage("carpathiaMove~" + tempRoll + "~");
         // }
       }
-      if (clientNum == 0)
+      // if (clientNum == 0)
         setTimeout(makeDiceNumber, 5000);
 
       canLib.drawRectangle(point.x - spaceWidth * 0.09, point.y - spaceWidth * 0.09, spaceWidth * 3.18, spaceWidth * 3.18, "white");
@@ -1263,23 +1272,38 @@ function Game(context, logHolder, tokenTracker) {
           break;
 
         case 'playerLeft':
+          if (started) {
+            break;
+          }
+
           const leftClientId = data
           const gonePlayer = playerData.find(({ id }) => id === leftClientId)
           if (gonePlayer) gonePlayers.push(gonePlayer)
           playerData = playerData.filter(({ id }) => id !== leftClientId)
-          if (!started) {
-            $('boardview-players').get(0).open(playerData)
-          }
+          $('boardview-players').get(0).open(playerData)
           console.log({ gonePlayers })
           break;
 
         case 'playerReturned':
-          const returnedClientId = data
-          playerData.push(gonePlayers.find(({ id }) => id === returnedClientId))
-          playerData = playerData.sort(({ playerNum: a }, { playerNum: b }) => a - b)
-          if (!started) {
-            $('boardview-players').get(0).open(playerData)
+          if (started) {
+            break;
           }
+
+          const returnedClientId = data.clientId
+          const returnedPlayer = gonePlayers.find(({ id }) => id === returnedClientId)
+          if (returnedPlayer) {
+            playerData.push(returnedPlayer)
+            gonePlayers = gonePlayers.filter(({ id }) => id === returnedClientId)
+          } else {
+            playerData.push({
+              id: returnedClientId,
+              name: data.name,
+              playerNum: playerData.length - 1
+            })
+          }
+
+          playerData = playerData.sort(({ playerNum: a }, { playerNum: b }) => a - b)
+          $('boardview-players').get(0).open(playerData)
           break;
 
         case "greenCard":
@@ -1310,6 +1334,8 @@ function Game(context, logHolder, tokenTracker) {
             const lieSuccess = liars.length === 0
             if (lieSuccess) {
               sendBoardViewMessage("getTokens~" + clientNum + "~" + lieSuccessTokens + "~");
+            } else {
+              sendBoardViewMessage("loseTokens~" + clientNum + "~" + lieFailureTokens + "~");
             }
 
             truthers.forEach(p => sendBoardViewMessage("loseTokens~" + p.playerNum + "~1~"));
@@ -1498,7 +1524,7 @@ function Game(context, logHolder, tokenTracker) {
               ctx.globalAlpha = 1;
               board.drawBoard();
               carpathia.turning = false;
-              if (clientNum == 0)
+              // if (clientNum == 0)
                 sendBoardViewMessage("carpathiaArrive~" + carpathia.newPlace() + "~" + args[1] + "~");
               // carpathia.arrive(args[1], 1, carpathia.newPlace());
             }
@@ -1515,9 +1541,9 @@ function Game(context, logHolder, tokenTracker) {
           board.players[args[1]].tokens -= 10;
           $("#playerTokens" + args[1]).html(board.players[args[1]].tokens);
 
-          if (board.players[args[1]].tokens < 0 && clientNum == 0 && !board.players[args[1]].dead) {
+          if (board.players[args[1]].tokens < 0 && !board.players[args[1]].dead) {
             sendBoardViewMessage("died~" + args[1] + "~0~");
-          } else if (clientNum == 0) {
+          } else {
             sendBoardViewMessage("yourTurn~0~");
           }
           break;
@@ -1765,6 +1791,4 @@ Game(
 
 window.onbeforeunload = function(e) {
   e.preventDefault();
-  e.stopPropogation();
-  alert('Are you sure you want to close? The answer is probably no')
 }

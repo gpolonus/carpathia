@@ -30,9 +30,17 @@ export function fetchPlayerInput(clientId, type) {
       type
     });
 
+    const intervalId = setInterval(() => {
+      sendMessage('requestPlayerInput', {
+        clientId,
+        type
+      });
+    }, 5 * 1000)
+
     const eventHandler = (e) => {
       const data = e.detail
       removeEventListener('playerInput', eventHandler)
+      clearInterval(intervalId)
       resolve(data);
     };
 

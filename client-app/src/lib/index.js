@@ -17,12 +17,11 @@ const handleMessage = (type, data) => {
       break;
 
     case 'finished':
-      resetState()
       gameStatusStore.value = GAME_STATUSES.FINISHED
       break;
 
     case 'reset':
-      gameStatusStore.value = GAME_STATUSES.UNSTARTED
+      resetState()
       break;
 
     case 'requestPlayerInput':
@@ -45,7 +44,9 @@ const onReconnect = (e) => {
     'Resume',
     () => {
       setTimeout(async () => {
-        ds.sendMessage('setName', { name: playerName.value });
+        if (playerName.value) {
+          ds.sendMessage('setName', { name: playerName.value });
+        }
         clearModal()
       })
     },

@@ -8,6 +8,11 @@ let selectedAnswer = $state('')
 const options = $derived(playerInputStore.value.options)
 
 function answer(e) {
+  if (!selectedAnswer) {
+    alert('SELECT AN ANSWER')
+    return
+  }
+
   const optionsAnswerMap = options.reduce((ac, o, i) => ({ ...ac, [o]: i + 1 }), {})
   sendPlayerInput('greenCard', { answer: optionsAnswerMap[selectedAnswer] });
 }

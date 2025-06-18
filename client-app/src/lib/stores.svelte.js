@@ -58,7 +58,7 @@ export function writable(initialValue) {
 
 export const gameStatusStore = resumableStore(GAME_STATUSES.UNSTARTED)
 
-export const playerInputStore = resumableStore();
+export const playerInputStore = writable({});
 
 export const sendPlayerInput = (type, data = {}, options = {}) => {
   data.type = type
@@ -85,4 +85,5 @@ export const resetState = () => {
   allStores.forEach((_, i) => {
     localStorage.removeItem(`store-${i}`)
   })
+  location.reload()
 }

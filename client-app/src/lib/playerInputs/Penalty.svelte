@@ -11,7 +11,12 @@ const options = [
   '3'
 ]
 
+
 function chose(e) {
+  if (!selectedOption) {
+    alert('SELECT A PENALTY')
+    return
+  }
   sendPlayerInput('penalty', { chosen: selectedOption - 1 });
 }
 

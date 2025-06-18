@@ -30,6 +30,9 @@ export const openConnection = (handleMessage, onOpen, onReconnect, onError, fetc
       console.log('Setting clientId:', data.clientId)
       clientId = data.clientId
       localStorage.setItem('clientId', clientId)
+    } else if (type === 'reset') {
+      localStorage.removeItem('clientId')
+      location.reload();
     } else {
       handleMessage(type, data)
     }

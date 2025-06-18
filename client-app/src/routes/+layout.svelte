@@ -1,6 +1,8 @@
 <script>
   import Alert from '../lib/alert.svelte';
   import { alertMessage, resetState } from '$lib';
+    import { playerName } from '../lib';
+    import { adminResetRequest } from '../lib/sse';
 
   const DEFAULTS = {
     primary: '#cc9425',
@@ -11,6 +13,19 @@
   let secondaryColor = DEFAULTS.secondary
   let textColor = DEFAULTS.text
   let colorStyles = `--primary:${primaryColor};--secondary:${secondaryColor};--text-color:${textColor}`
+
+  const adminReset = () => {
+    const pw = prompt("What's the admin password?");
+    adminResetRequest(pw).catch(() => {
+      alert('Reset request failed');
+    })
+  }
+
+  const resetStateRequest = () => {
+    if (confirm('Are you sure you want to reset? This will fully take you out of the game.')) {
+      resetState()
+    }
+  }
 
 </script>
 
@@ -49,7 +64,6 @@
   }
 
   :global(h1, h2, h3) {
-    font-family: "Creepster", system-ui;
     font-weight: 400;
     font-style: normal;
     margin: 0;
@@ -58,6 +72,7 @@
   }
 
   :global(h1) {
+    font-family: "Creepster", system-ui;
     font-size: 4rem;
   }
 
@@ -118,7 +133,7 @@
 <div class="body" style={colorStyles}>
   <div class="header">
     <h1>
-      Carpathia Controls
+      Carpathia Controls: {playerName.value}
     </h1>
   </div>
 
@@ -128,7 +143,7 @@
 
   <footer>
     <div>
-      © Griffin Polonus 2025. All Rights Reserved. <button onclick={resetState}>Reset</button>
+      © Griffin Polonus 2025. All Rights Reserved. <button onclick={resetStateRequest}>Reset</button> <button onclick={adminReset}>Admin Reset</button>
     </div>
   </footer>
 </div>

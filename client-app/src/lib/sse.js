@@ -64,3 +64,7 @@ export function sendMessage(action, data) {
   return fetch(`${url}/message?id=${clientId}&action=${action}&${Object.entries(data).map(([k, v]) => `${k}=${v}`).join('&')}`)
 }
 
+export function adminResetRequest(password) {
+  return fetch(`${url}/reset?password=${password}`)
+}
+

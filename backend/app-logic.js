@@ -8,6 +8,11 @@ class AppBase {
 
   clients = {}
 
+  resetState() {
+    this.sendMessageToAll('reset')
+    this.clients = {}
+  }
+
   clientOpened(client, params) {
     this.clients[client.id] = client
     this.onClientOpen(client, params);
@@ -33,6 +38,7 @@ class AppBase {
   }
 
   sendMessageToAll(type, data = {}, clients) {
+    console.log(`Sending message to all:`, type, data)
     clients = Object.values(clients || this.clients)
     clients.forEach(client => client.send(type, data))
   }
@@ -86,21 +92,41 @@ class ComboApp extends AppBase {
 }
 
 export class GameApp extends AppBase {
+  started = false
   players = []
   boardViewClient = 0;
   greenCard;
   redCard;
 
   resetState() {
+    super.resetState()
+    this.started = false
     this.players = []
     this.boardViewClient = 0;
+    this.redCardReactions = {}
+    this.greenCard = {};
+    this.redCard = {};
   }
 
   boardViewSend(...args) {
     if (this.boardViewClient) {
       this.boardViewClient.send(...args)
     } else {
-      console.log('THE BOARDVIEW DISCONNECTED FOR SOME REASON')
+      console.log('THE BOARDVIEW DISCONNECTED FOR SOME REASON.')
+      const newBoardView = Object.values(this.clients).find(c => c.name === 'boardview')
+      if (newBoardView) {
+        this.boardViewClient = newBoardView
+        this.boardViewSend(...args)
+        console.log('BOARDVIEW FOUND')
+      }
+    }
+  }
+
+  playerSend(p, ...args) {
+    if (p.left) {
+      console.log(`Player ${p.name} is not connected`)
+    } else {
+      p.send(...args)
     }
   }
 
@@ -109,7 +135,11 @@ export class GameApp extends AppBase {
       this.boardViewClient = client;
       client.name = 'boardview'
     } else {
-      this.players.push(client)
+      if (!this.started) {
+        this.players.push(client)
+      } else {
+        client.left = false
+      }
     }
   }
 
@@ -126,7 +156,10 @@ export class GameApp extends AppBase {
     } else {
       this.boardViewSend(
         'playerReturned',
-        client.id
+        {
+          clientId: client.id,
+          name: client.name
+        }
       )
     }
   }
@@ -139,13 +172,21 @@ export class GameApp extends AppBase {
 
     if (client === this.boardViewClient) {
       this.boardViewClient = 0
-    } else {
+    } else if (!this.started) {
       this.players = this.players.filter(c => c.id !== client.id)
 
       this.boardViewSend(
         'playerLeft',
         client.id
-      )
+      );
+    } else {
+      // Should also mutate the object in the players list
+      client.left = true
+
+      this.boardViewSend(
+        'playerLeft',
+        client.id
+      );
     }
   }
 
@@ -165,16 +206,18 @@ export class GameApp extends AppBase {
         break;
 
       case 'start':
-        this.players.forEach(p => p.send('start'))
+        this.started = true
+        this.players.forEach(p => this.playerSend(p, 'start'))
         break;
 
       case 'finished':
-        this.players.forEach(p => p.send('finished'))
+        this.started = false
+        this.players.forEach(p => this.playerSend(p, 'finished'))
         break;
 
       case 'requestPlayerInput':
         const playerClientId = params.clientId
-        let playersToRequest = [this.clients[playerClientId]]
+        let playersToRequest = [this.players.find(p => p.id === playerClientId)]
         switch (params.type) {
           case 'greenCard':
             params.options = this.greenCard.options
@@ -182,18 +225,20 @@ export class GameApp extends AppBase {
             break;
           case 'redCardReactions':
             params.prompt = this.redCard
-            const players = [...this.players]
-            const playerIndex = this.players.findIndex(p => p.id === playerClientId)
-            const playerClient = players.splice(playerIndex, 1)[0]
-            params.playerName = playerClient.name
-            playersToRequest = players
+            const reactedPlayers = Object.keys(this.redCardReactions || {})
+            const unreactedPlayers = this.players.filter(p => !reactedPlayers.includes(p.id))
+            const answeringPlayerIndex = unreactedPlayers.findIndex(p => p.id === playerClientId)
+            const answeringClient = unreactedPlayers.splice(answeringPlayerIndex, 1)[0]
+            params.playerName = answeringClient.name
+            console.log({ reactions: this.redCardReactions, playerClientId, answeringClient: answeringClient.id, players: this.players.map(({ name, id, left }) => ({ name, id, left })), reactedPlayers, unreactedPlayers })
+            playersToRequest = unreactedPlayers
             break;
           case 'redCard':
             params.prompt = this.redCard
             break;
         }
 
-        playersToRequest.forEach(p => p.send(action, params));
+        playersToRequest.forEach(p => this.playerSend(p, action, params));
         break;
 
       case 'playerInput':

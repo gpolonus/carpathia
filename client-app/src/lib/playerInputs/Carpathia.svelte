@@ -12,6 +12,10 @@ const options = [
 ]
 
 function roll(e) {
+  if (!selectedDie) {
+    alert('PICK A DIE')
+    return
+  }
   sendPlayerInput('carpathia', { rolledDie: selectedDie }, { keep: true });
 }
 
