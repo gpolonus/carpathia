@@ -80,3 +80,9 @@ export const openModal = (type, message, actionName, action, showCloseButton = t
 export const clearModal = () => {
   alertMessage.value = {}
 }
+
+export const resetState = () => {
+  allStores.forEach((_, i) => {
+    localStorage.removeItem(`store-${i}`)
+  })
+}

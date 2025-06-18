@@ -150,8 +150,6 @@ export class GameApp extends AppBase {
   }
 
   onMessage(client, action, params) {
-
-
     console.log(`Got a ${action} message from ${client.name} with data: ${JSON.stringify(params)}`)
     switch (action) {
       case 'setName':
@@ -168,6 +166,10 @@ export class GameApp extends AppBase {
 
       case 'start':
         this.players.forEach(p => p.send('start'))
+        break;
+
+      case 'finished':
+        this.players.forEach(p => p.send('finished'))
         break;
 
       case 'requestPlayerInput':

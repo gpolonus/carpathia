@@ -5,7 +5,8 @@ import {
   clearModal,
   playerInputStore,
   playerName,
-  GAME_STATUSES
+  GAME_STATUSES,
+  resetState
 } from './stores.svelte.js';
 
 const handleMessage = (type, data) => {
@@ -14,7 +15,9 @@ const handleMessage = (type, data) => {
     case 'start':
       gameStatusStore.value = GAME_STATUSES.STARTED
       break;
+
     case 'finished':
+      resetState()
       gameStatusStore.value = GAME_STATUSES.FINISHED
       break;
 

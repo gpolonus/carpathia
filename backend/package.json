@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
     "dev": "nodemon ./sse.js",
-    "start": "node sse.js"
+    "start": "MODE=production node sse.js"
 	},
 	"dependencies": {
 		"body-parser": "^2.2.0",

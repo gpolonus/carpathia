@@ -982,6 +982,7 @@ function Game(context, logHolder, tokenTracker) {
     //   "");
     // $(".cover, .coverContainer").css("display", "block");
     $('show-winner').get(0).open(playerData.find(p => p.playerNum = num).name, board.players.reduce((ac, p) => ({ ...ac, [p.name]: p.tokens }), {}))
+    sendMessage('finished')
   }
 
   function winning() {

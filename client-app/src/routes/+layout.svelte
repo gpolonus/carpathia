@@ -1,15 +1,15 @@
 <script>
   import Alert from '../lib/alert.svelte';
-  import { alertMessage } from '$lib';
+  import { alertMessage, resetState } from '$lib';
 
   const DEFAULTS = {
     primary: '#cc9425',
     secondary: '#4A412A',
     text: 'white',
   }
-  let primaryColor = localStorage.getItem('primary-color') || DEFAULTS.primary
-  let secondaryColor = localStorage.getItem('secondary-color') || DEFAULTS.secondary
-  let textColor = localStorage.getItem('text-color') || DEFAULTS.text
+  let primaryColor = DEFAULTS.primary
+  let secondaryColor = DEFAULTS.secondary
+  let textColor = DEFAULTS.text
   let colorStyles = `--primary:${primaryColor};--secondary:${secondaryColor};--text-color:${textColor}`
 
 </script>
@@ -102,6 +102,17 @@
     display: inline-block;
     padding: 0 0.25rem;
   }
+
+  footer button {
+    padding: 0;
+    font-size: 12px;
+    text-decoration: underline;
+    box-shadow: none;
+    border: 0;
+    background: transparent;
+    color: white;
+    margin: 0;
+  }
 </style>
 
 <div class="body" style={colorStyles}>
@@ -117,7 +128,7 @@
 
   <footer>
     <div>
-      © Griffin Polonus 2025. All Rights Reserved.
+      © Griffin Polonus 2025. All Rights Reserved. <button onclick={resetState}>Reset</button>
     </div>
   </footer>
 </div>
