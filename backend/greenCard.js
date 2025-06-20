@@ -20,7 +20,7 @@ export default {
     // card.options = card.options.map((_, i) => card.options[randomMapping[i]]);
     // card.answer = randomMapping[card.answer];
     card.answerValue = card.options[card.answer - 1];
-    card.options = randomizeItems(card.options)
+    // card.options = randomizeItems(card.options)
     return card;
   },
 
