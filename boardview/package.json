@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "npx vite dev --port 3002",
 		"build": "./build.sh",
-    "start": "vite dev --port 3005 --base=/carpathia/boardview"
+    "start": "npm run build && http-server dist --port=3005"
 	},
 	"dependencies": {
 		"lit": "^3.3.0"

@@ -58,7 +58,7 @@ export default class BoardviewPlayers extends LitElement {
 
   open(players) {
     this.players = players || []
-    this.dialogRef.value.showModal()
+    this.dialogRef.value?.showModal()
   }
 
   close() {
@@ -67,7 +67,7 @@ export default class BoardviewPlayers extends LitElement {
       return
     }
 
-    this.dialogRef.value.close()
+    this.dialogRef.value?.close()
     this.dispatchEvent(new CustomEvent('start', { bubbles: false }))
   }
 
