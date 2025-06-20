@@ -22,8 +22,15 @@ function Game(context, logHolder, tokenTracker) {
   var board = new Board();
   var carpathia = new Carpathia();
   // How it's set up currently: You have a 1 in `carpathiaChance` of rolling one die successfully.
-  var carpathiaChance = 6;
-  var carpathiaDecreaseAmount = 0.5;
+  // TODO
+  // var carpathiaChance = 6;
+  var carpathiaChance = 1;
+  // var carpathiaDecreaseAmount = 0.5;
+  var carpathiaDecreaseAmount = 0;
+  // const deadTokenGainChance = 1.5
+  const deadTokenGainChance = 1
+  const deadTokenGain = 10
+
   var spaceWidth;
   var startSpot;
 
@@ -773,7 +780,9 @@ function Game(context, logHolder, tokenTracker) {
         } else {
           ctx.drawImage(diceImages[num], point.x, point.y, spaceWidth * 3, spaceWidth * 3);
           setTimeout(() => {
-            sendBoardViewMessage("rolled~" + (num + 1) + "~" + clientNum + "~");
+            // TODO
+            // sendBoardViewMessage("rolled~" + (num + 1) + "~" + clientNum + "~");
+            sendBoardViewMessage("rolled~" + (1) + "~" + clientNum + "~");
           }, 1.5 * 1000);
         }
       }
@@ -1313,10 +1322,19 @@ function Game(context, logHolder, tokenTracker) {
 
           const { answer, correctAnswer } = await fetchPlayerInput(clientId, 'greenCard')
           greenCardEl.open(card, answer, correctAnswer)
+          if (answer === correctAnswer) {
+            sendBoardViewMessage("getTokens~" + clientNum + "~" + 5 + "~");
+            sendBoardViewMessage(`broadcast~Correct! Good job ${clientName}, roll again!~`)
+            await fetchPlayerInput(clientId, 'readyup');
+            greenCardEl.close()
+            board.players[clientNum].roll();
+          } else {
+            sendBoardViewMessage(`broadcast~${clientName} got the question wrong, no tokens awarded.~`)
+            await fetchPlayerInput(clientId, 'readyup');
+            greenCardEl.close()
+            turnEnd();
+          }
 
-          await fetchPlayerInput(clientId, 'readyup');
-          greenCardEl.close()
-          turnEnd();
           break;
 
         case 'redCard':
@@ -1471,9 +1489,9 @@ function Game(context, logHolder, tokenTracker) {
               turnStart();
             } else {
               // sendMessage("deadTokens~" + clientNum + "~");
-              var chance = Math.round(Math.random()) == 0;
+              var chance = Math.floor(Math.random() * deadTokenGainChance) === 0;
               if (chance) {
-                sendBoardViewMessage("getTokens~" + clientNum + "~5~");
+                sendBoardViewMessage("getTokens~" + clientNum + "~" + deadTokenGain + "~");
                 sendBoardViewMessage("broadcast~" + clientName + " has been gifted 5 tokens by the heavens!");
               } else {
                 sendBoardViewMessage("loseTokens~" + clientNum + "~2~");
