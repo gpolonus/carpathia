@@ -316,6 +316,8 @@ function Game(context, logHolder, tokenTracker) {
 
       this.draw = function (drawingBig) {
         drawingFunctions[this.type](drawingBig);
+        // TODO
+        this.topToken = clientId
         if (this.topToken != undefined) {
           ctx.fillStyle = board.players[this.topToken]?.color;
           ctx.strokeStyle = "black";
