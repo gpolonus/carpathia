@@ -224,7 +224,7 @@ function Game(context, logHolder, tokenTracker) {
 
     // get the start space at the specified number
     this.getStart = function (num) {
-      return spacesArray[Math.round(this.sideNum * 2 / 3 * num)][0];
+      return spacesArray[Math.round(this.sideNum * 2 / 3 * num) % spacesArray.length][0];
     }
 
     function drawCarpathiaDieOnce(place, isThisADie, hovering, failure) {
@@ -997,7 +997,8 @@ function Game(context, logHolder, tokenTracker) {
     //   "</ul>" +
     //   "");
     // $(".cover, .coverContainer").css("display", "block");
-    $('show-winner').get(0).open(playerData.find(p => p.id = id).name, board.players.reduce((ac, p) => ({ ...ac, [p.name]: p.tokens }), {}))
+    const actualId = carpathia.space.topToken
+    $('show-winner').get(0).open(playerData.find(p => p.id = actualId).name, board.players.reduce((ac, p) => ({ ...ac, [p.name]: p.tokens }), {}))
     sendMessage('finished')
   }
 

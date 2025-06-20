@@ -79,6 +79,7 @@ export default class ShowWinner extends LitElement {
     return html`
       <dialog ${ref(this.dialogRef)} class="modal-body">
         <h1>${this.winner} is the winner!</h1>
+        <h3>You played so well, Jesus came back for you!</h3>
         <h2>Token Amounts:</h2>
         ${
           this.tokens
