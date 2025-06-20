@@ -825,7 +825,7 @@ function Game(context, logHolder, tokenTracker) {
 
     this.react = function () {
       if (unleashed) {
-        sendBoardViewMessage("placeTopToken~" + clientNum + "~" + this.space.id + "~");
+        sendBoardViewMessage("placeTopToken~" + clientId + "~" + this.space.id + "~");
         // if(this.space.id == carpathia.space.id)
         //   sendMessage("carpathiaHit~" + clientNum + "~");
       }
@@ -976,7 +976,7 @@ function Game(context, logHolder, tokenTracker) {
     }
   }
 
-  function displayWinner(num) {
+  function displayWinner(id) {
     // $(".coverContainerContents").css("background-color", "#000");
     // $(".coverContainerContents").css("color", "#fff");
     // $(".coverContainerContents h1").css("color", "#fff");
@@ -990,7 +990,7 @@ function Game(context, logHolder, tokenTracker) {
     //   "</ul>" +
     //   "");
     // $(".cover, .coverContainer").css("display", "block");
-    $('show-winner').get(0).open(playerData.find(p => p.playerNum = num).name, board.players.reduce((ac, p) => ({ ...ac, [p.name]: p.tokens }), {}))
+    $('show-winner').get(0).open(playerData.find(p => p.id = id).name, board.players.reduce((ac, p) => ({ ...ac, [p.name]: p.tokens }), {}))
     sendMessage('finished')
   }
 
@@ -1102,7 +1102,7 @@ function Game(context, logHolder, tokenTracker) {
       var person = board.playerOnSpace(this.space);
       if (person != undefined) {
         sendBoardViewMessage("carpathiaHit~" + person + "~");
-      } else if (this.space.topToken != undefined) {
+      } else if (this.space.topToken !== undefined) {
         winner = this.space.topToken;
         turnEnd();
       } else {
