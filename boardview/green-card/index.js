@@ -75,6 +75,7 @@ export default class GreenCard extends LitElement {
   render() {
     const optionPrefixes = ['A', 'B', 'C', 'D',]
     const card = this.card || {}
+    // Double equals necessary here
     const isCorrect = this.correctAnswer == this.answer
     const correctIndex = this.correctAnswer ? this.correctAnswer - 1 : -1
     const wrongIndex = this.answer ? this.answer - 1 : -1

@@ -317,7 +317,7 @@ function Game(context, logHolder, tokenTracker) {
       this.draw = function (drawingBig) {
         drawingFunctions[this.type](drawingBig);
         if (this.topToken != undefined) {
-          ctx.fillStyle = board.players[this.topToken]?.color;
+          ctx.fillStyle = board.players.find(p => p.id === this.topToken)?.color;
           ctx.strokeStyle = "black";
           ctx.beginPath();
           ctx.moveTo(this.x + 0.1 * spaceWidth, this.y - spaceWidth / 2);
@@ -1320,7 +1320,8 @@ function Game(context, logHolder, tokenTracker) {
 
           const { answer, correctAnswer } = await fetchPlayerInput(clientId, 'greenCard')
           greenCardEl.open(card, answer, correctAnswer)
-          if (answer === correctAnswer) {
+          // Double equals necessary here
+          if (answer == correctAnswer) {
             sendBoardViewMessage("getTokens~" + clientNum + "~" + 5 + "~");
             sendBoardViewMessage(`broadcast~Correct! Good job ${clientName}, roll again!~`)
             await fetchPlayerInput(clientId, 'readyup');
@@ -1490,13 +1491,13 @@ function Game(context, logHolder, tokenTracker) {
               var chance = Math.floor(Math.random() * deadTokenGainChance) === 0;
               if (chance) {
                 sendBoardViewMessage("getTokens~" + clientNum + "~" + deadTokenGain + "~");
-                sendBoardViewMessage("broadcast~" + clientName + " has been gifted 5 tokens by the heavens!");
+                sendBoardViewMessage("broadcast~" + clientName + " has been gifted " + deadTokenGain + " tokens by the heavens!");
               } else {
                 sendBoardViewMessage("loseTokens~" + clientNum + "~2~");
                 sendBoardViewMessage("broadcast~" + clientName + " has paid 2 tokens as penance in the afterlife!");
               }
 
-              if ((chance && board.players[clientNum].tokens + 5 > 0) || (!chance && board.players[clientNum].tokens - 2 > 0)) {
+              if ((chance && board.players[clientNum].tokens > 0)) {
                 // board.players.dead = false;
                 sendBoardViewMessage("alived~" + clientNum + "~");
                 sendBoardViewMessage("broadcast~The tokens that " + clientName + " had received allowed them to buy their way back to life!");
