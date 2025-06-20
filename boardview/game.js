@@ -316,8 +316,6 @@ function Game(context, logHolder, tokenTracker) {
 
       this.draw = function (drawingBig) {
         drawingFunctions[this.type](drawingBig);
-        // TODO
-        this.topToken = clientId
         if (this.topToken != undefined) {
           ctx.fillStyle = board.players[this.topToken]?.color;
           ctx.strokeStyle = "black";
@@ -782,9 +780,7 @@ function Game(context, logHolder, tokenTracker) {
         } else {
           ctx.drawImage(diceImages[num], point.x, point.y, spaceWidth * 3, spaceWidth * 3);
           setTimeout(() => {
-            // TODO
-            // sendBoardViewMessage("rolled~" + (num + 1) + "~" + clientNum + "~");
-            sendBoardViewMessage("rolled~" + (1) + "~" + clientNum + "~");
+            sendBoardViewMessage("rolled~" + (num + 1) + "~" + clientNum + "~");
           }, 1.5 * 1000);
         }
       }
