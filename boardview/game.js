@@ -1522,7 +1522,7 @@ function Game(context, logHolder, tokenTracker) {
               board.spacesArray[i][0].placeTopToken(args[1]);
               break;
             }
-          board.players[args[1]].tokens--;
+          board.players.find(p => p.id === args[1]).tokens--;
           // if(board.players[args[1]].tokens < 0 && clientNum == 0)
           //   sendMessage("died~" + args[1] + "~");
           break;
