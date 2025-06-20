@@ -22,13 +22,9 @@ function Game(context, logHolder, tokenTracker) {
   var board = new Board();
   var carpathia = new Carpathia();
   // How it's set up currently: You have a 1 in `carpathiaChance` of rolling one die successfully.
-  // TODO
-  // var carpathiaChance = 6;
-  var carpathiaChance = 1;
-  // var carpathiaDecreaseAmount = 0.5;
-  var carpathiaDecreaseAmount = 0;
-  // const deadTokenGainChance = 1.5
-  const deadTokenGainChance = 1
+  var carpathiaChance = 6;
+  var carpathiaDecreaseAmount = 0.5;
+  const deadTokenGainChance = 1.5
   const deadTokenGain = 10
 
   var spaceWidth;
@@ -544,7 +540,7 @@ function Game(context, logHolder, tokenTracker) {
             //     prepTurnEnd();
             //   }
             // },
-            // TODO: Add more of these
+            // TODO LATER: Add more of these
             {
               text: "You got 10 tokens!",
               func: function () {
@@ -556,6 +552,20 @@ function Game(context, logHolder, tokenTracker) {
               text: "You lost 10 tokens!",
               func: function () {
                 sendBoardViewMessage("loseTokens~" + clientNum + "~10~");
+                prepTurnEnd();
+              }
+            },
+            {
+              text: "You got 5 tokens!",
+              func: function () {
+                sendBoardViewMessage("getTokens~" + clientNum + "~5~");
+                prepTurnEnd();
+              }
+            },
+            {
+              text: "You lost 5 tokens!",
+              func: function () {
+                sendBoardViewMessage("loseTokens~" + clientNum + "~5~");
                 prepTurnEnd();
               }
             },
