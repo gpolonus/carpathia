@@ -1760,7 +1760,8 @@ function Game(context, logHolder, tokenTracker) {
   playerDialog.addEventListener('start', (e) => {
     sendMessage('start')
 
-    playerData.forEach(player => {
+    playerData.forEach((player, i) => {
+      player.playerNum = i
       board.makeNewPlayer(player)
     })
 
