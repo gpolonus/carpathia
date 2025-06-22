@@ -3,6 +3,7 @@ import 'dotenv/config';
 import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
+import fs from 'fs'
 import { generate } from 'random-words';
 import multer from 'multer'
 import app from './app-logic.js'
@@ -136,6 +137,45 @@ serverRouter.get('/message', (req, res) => {
   }
 })
 
+export const getData = (path, fn, delimiter = ',') => {
+  return new Promise(resolve => {
+    fs.createReadStream(path)
+      .pipe(csv.parse({ headers: true, delimiter }))
+      .on('data', fn)
+      .on('end', () => {
+        resolve()
+      })
+  });
+}
+
+const getCards = async (path) => {
+  let newRedCards = []
+  let newGreenCards = []
+  await getData(path, (row) => {
+    if (row['Red Question Text']){
+      newRedCards.push(row['Red Question Text'])
+    }
+
+    if (row['Green Question Text']){
+      newGreenCards.push({
+        options: [
+          row['Option A'],
+          row['Option B'],
+          row['Option C'],
+          row['Option D']
+        ],
+        question: row['Green Question Text'],
+        answer: {'A': 1, 'B': 2, 'C': 3, 'D': 4}[row['Which of the options above is the correct answer?']]
+      })
+    }
+  })
+
+  greenCard.setCards(newGreenCards)
+  redCard.setCards(newRedCards)
+
+  console.log("Successfully added cards!")
+}
+
 serverRouter.post('/questions', bodyParser.text(), (req, res) => {
   const newGreenCards = [];
   const newRedCards = [];
@@ -174,5 +214,7 @@ const s = server.listen(PORT, '0.0.0.0', (error) => {
     throw error
   }
   console.log(`Listening on ${JSON.stringify(s.address())}`)
+
+  getCards('./carpathia_questions_2025.csv');
 });
 
