@@ -48,3 +48,12 @@ This time it's gonna be so good.
   - Keep all the data on the BE and have the clientIds be the key to reconnecting to your data that is being stored on the BE
 - Figure out how to serve boardview static files via NGINX instead of having to startup a separate HTTP Server via npm
 - all the FE apps need error modals for when the server falls over
+- have someone pick their name from a list when they've disconnected and reset
+  - this is a decent remedy to not having player profiles
+- actually would be pretty easy to create an "AI player" bc the inputs and outputs will be clearly defined once the thing is put together
+- BE holds all the logic, and the game screen holds all the drawing logic. The BE sends events/drawing commands to the FE and the FE does it, but the FE holds no inherent game logic
+- for reconnecting, send along the clientId you already have
+- build the SSE server as an express plugin
+- all game controls change to four directions and A/B. Keeps it consistent across all games
+  - how would this work if I built something as complicated as Catan?
+    - Im not there yet, can't worry about it
